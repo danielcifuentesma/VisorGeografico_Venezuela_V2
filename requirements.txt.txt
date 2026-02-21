@@ -1,0 +1,5 @@
+geopandas
+streamlit
+leafmap
+requests
+pyogrio
