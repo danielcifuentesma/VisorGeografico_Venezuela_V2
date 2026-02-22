@@ -172,7 +172,7 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
-    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQB7c0C5326QTYAR63RSjGpmAS1wPW-gOFfpK8BtJKa_DUg?e=QONC1e'
+    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQBZLa9Q-uFfR7w7BCCDblkYAYUKswCdfdycUVS3dTnuNXg?e=3HxhpD'
     ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQA6J7fhOvXcS6RSY3LetrRwAd_srk31sqy6uZ6NzlalHlk?e=WeP3Wx'
  
     
