@@ -260,11 +260,20 @@ class VisorGeografico:
                 
                 if nombre in columnas_labels:                                  # Etiqueta siempre encendida
                     
+                    
+                    
+                   
+                    mascara_css = (                                            # Definimos un halo negro para texto blanco
+                        "white; "                                              # El text-shadow crea una máscara en las 4 esquinas del texto
+                        "text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, "
+                        "-1px 1px 0 #000, 1px 1px 0 #000, "
+                        "0px 0px 5px #000;")
+                    
                     mapa_1.add_labels(
                         data=gdf_visualizacion,
                         column=columnas_labels[nombre],
                         font_size="10pt",
-                        font_color="black",
+                        font_color= mascara_css,
                         font_family="verdana",
                         font_weight="bold")         
                     
