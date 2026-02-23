@@ -31,6 +31,7 @@ class AlistamientoDatos:
         self.url_drive = url_drive
         self.url_directa = self.convertir_url(self.url_drive)
 
+    
     def convertir_url(self, url):
         """
         Versión para SharePoint Business.
@@ -128,7 +129,22 @@ class VisorGeografico:
     
     
     
-    def generacion_mapa (self, capas_dicc):
+    
+    def _formatear_enlace (self, gdf, columna_url):                            # Método que convierte la Dirección URL de los Documentos a enlazar, a formato HTML
+        
+        
+        if columna_url in gdf.columns:
+            
+            gdf [columna_url] = gdf[columna_url].apply (lambda x: f'<a href="{x}" target="_blank" style="color: blue; font-weight: bold;">Abrir Documento 🔗</a>' 
+                if str(x).startswith('http') else x)
+            
+        return gdf
+        
+    
+    
+    
+    
+    def generacion_mapa (self, capas_dicc, columnas_enlaces=None):
         
         
         '''
@@ -136,28 +152,47 @@ class VisorGeografico:
         
         '''
         
+        columnas_enlaces = columnas_enlaces or {}    
+        
+        
         
         mapa_1 = leafmap.Map (center = self.center,                            # Se crea un Objeto Tipo Mapa     
                               zoom = self.zoom)
     
         
-        mapa_1.add_basemap(basemap='HYBRID',                                    # Se adiciona un Base Map
+        mapa_1.add_basemap(basemap='HYBRID',                                   # Se adiciona un Base Map
                           show=True,)
  
+    
+    
+    
         
-        for nombre, capa in capas_dicc.items():                                        # Adiciona todas las Capas al Objeto Mapa
+        for nombre, capa in capas_dicc.items():                                # Adiciona todas las Capas al Objeto Mapa
             
             if capa is not None:
                 
-                mapa_1.add_gdf (gdf = capa,
+                
+                gdf_visualizacion = capa.copy()                                # Se copia el GDF para no alterar los datos originales del análisis
+                
+                
+                
+                if nombre in columnas_enlaces:                                 # Si la capa tiene una columna definida como enlace, se formatea
+                    
+                    gdf_visualizacion = self._formatear_enlace(gdf = gdf_visualizacion, 
+                                                               columna_url = columnas_enlaces [nombre])
+                
+                
+                
+                
+                mapa_1.add_gdf (gdf = gdf_visualizacion,
                          layer_name = nombre,
                          info_mode = 'on_click',
-                         zoom_to_layer = True)
+                         zoom_to_layer = False)
      
         
             
-        mapa_1.to_streamlit (width = 800,
-                             height = 600)
+        mapa_1.to_streamlit (width = 900,
+                             height = 700)
             
 
 
@@ -226,10 +261,12 @@ def inicio_modelo_visor_geografico ():
                   'Pozos (Nipa-Nardo-Nieblas)': nnn_pozos
                   }
     
-    #'Pozos (Budare Elotes)': be_pozos,
-    #'Pozos (Nipa-Nardo-Nieblas)': nnn_pozos
     
-    visor_geografico.generacion_mapa(capas_dicc)                               # Se envían las capas que se incluirán en el Objeto Mapa
+    columnas_hipervinculo = {'Pozos (Budare Elotes)': 'DocInteres1'}           # Diccionario con el Nombre de Gdf y sus campos donde existe una Dirección URL para realizar los hipervinculos 
+    
+    
+    visor_geografico.generacion_mapa(capas_dicc = capas_dicc, 
+                                     columnas_enlaces = columnas_hipervinculo)         # Se envían las capas que se incluirán en el Objeto Mapa
     
     
     
