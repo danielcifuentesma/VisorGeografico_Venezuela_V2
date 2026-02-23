@@ -253,8 +253,8 @@ class VisorGeografico:
                         data=gdf_visualizacion,
                         column=columnas_labels[nombre],
                         font_size="10pt",
-                        font_color="white",
-                        font_family="arial",
+                        font_color="black",
+                        font_family="verdana",
                         font_weight="bold")         
                     
                     
