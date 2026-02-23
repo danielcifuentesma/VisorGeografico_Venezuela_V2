@@ -206,16 +206,18 @@ class VisorGeografico:
     
     
     
-    def generacion_mapa (self, capas_dicc, columnas_enlaces=None):
+    def generacion_mapa (self, capas_dicc, columnas_enlaces=None, columnas_labels=None):
         
         
         '''
         capas_dicc = {NombreCapa:Gdf}
+        columnas_enlaces = {NombreCapa: CampoURL}
+        columnas_labels = {NombreCapa: CampoLabel}
         
         '''
         
-        columnas_enlaces = columnas_enlaces or {}    
-        
+        columnas_enlaces = columnas_enlaces or {}                              # Se inicializa el Dicionario de Enlaces (Hipervinculos)
+        columnas_labels = columnas_labels or {}                                # Se inicializa el Diccionario de Labels
         
         
         mapa_1 = leafmap.Map (center = self.center,                            # Se crea un Objeto Tipo Mapa     
@@ -242,6 +244,23 @@ class VisorGeografico:
                     
                     gdf_visualizacion = self._formatear_enlace(gdf = gdf_visualizacion, 
                                                                columna_url = columnas_enlaces [nombre])
+                
+                
+                
+                if nombre in columnas_labels:                                  # Etiqueta siempre encendida
+                    
+                    mapa_1.add_labels(
+                        data=gdf_visualizacion,
+                        column=columnas_labels[nombre],
+                        font_size="10pt",
+                        font_color="white",
+                        font_family="arial",
+                        font_weight="bold")         
+                    
+                    
+                
+                
+                
                 
                 
                 
@@ -352,6 +371,12 @@ def inicio_modelo_visor_geografico ():
     print ('Pozos BE:', be_pozos.columns)
     
     
+    print ('Pozos (Budare Elotes): Prueba Piloto:', len (be_pozos_prueba_piloto))
+    
+    print ('Pozos (Nipa-Nardo-Nieblas): Prueba Piloto:', len (nnn_pozos_prueba_piloto))
+    
+    
+    
     capas_dicc = {'Bloque Budare-Elotes': be_bloque,                           # Diccionario con el Nombre y Gdf que se adicionarán al Objeto Mapa (LeafMap)
                   'Bloque Nipa-Nardo-Nieblas': nnn_bloque,
                   'Campos (Budare-Elotes):':  be_campos,
@@ -372,8 +397,13 @@ def inicio_modelo_visor_geografico ():
                              'Pozos (Budare Elotes): Prueba Piloto':'DocInteres1'}                                    # Diccionario con el Nombre de Gdf y sus campos donde existe una Dirección URL para realizar los hipervinculos 
     
     
-    visor_geografico.generacion_mapa(capas_dicc = capas_dicc, 
-                                     columnas_enlaces = columnas_hipervinculo)         # Se envían las capas que se incluirán en el Objeto Mapa
+    columnas_labels = {'Pozos (Budare Elotes): Prueba Piloto': 'UWISuperf',
+                       'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': 'UWISuperf'}
+    
+    
+    visor_geografico.generacion_mapa(capas_dicc = capas_dicc,                           # Se envían las capas que se incluirán en el Objeto Mapa
+                                     columnas_enlaces = columnas_hipervinculo,
+                                     columnas_labels = columnas_labels)         
     
     
     
