@@ -13,14 +13,14 @@ import tempfile
 import os
 import zipfile
 import shutil
-from datetime import datetime                                                  # Del Modulo Datetime, se importa la Clase Date para poder actualizar el Script con la Fecha actual
+
 
 
 
 '''
 Clase AlistamientoDatos
 
-
+Accede a los Datos ubicados en el OneDrive
 
 '''
 
@@ -49,7 +49,9 @@ class AlistamientoDatos:
     def cargar_capa_zip(_self, nombre_capa):
     
         temp_dir = tempfile.mkdtemp()
+        
         try:
+            
             response = requests.get(_self.url_directa, timeout=30)
             
             # --- DIAGNÓSTICO DE INGENIERÍA ---
@@ -64,30 +66,42 @@ class AlistamientoDatos:
 
             zip_path = os.path.join(temp_dir, "datos.zip")
             with open(zip_path, "wb") as f:
+                
                 f.write(response.content)
 
             # Verificamos si es un ZIP válido antes de abrirlo
             if not zipfile.is_zipfile(zip_path):
+                
                 print("❌ ERROR: El archivo descargado NO es un ZIP válido. Probablemente es una página de login de Microsoft.")
+                
                 return None
 
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                
                 zip_ref.extractall(temp_dir)
 
             ruta_gdb = None
+            
             for raiz, carpetas, archivos in os.walk(temp_dir):
+                
                 for carpeta in carpetas:
+                    
                     if carpeta.endswith(".gdb"):
+                        
                         ruta_gdb = os.path.join(raiz, carpeta)
+                        
                         break
             
             if not ruta_gdb:
+                
                 print("❌ No se encontró carpeta .gdb dentro del ZIP.")
+                
                 return None
 
             gdf = gpd.read_file(ruta_gdb, layer=nombre_capa, engine='pyogrio')
             
             if gdf.crs != "EPSG:4326":
+                
                 gdf = gdf.to_crs(epsg=4326)
                 
             cols_fecha = gdf.select_dtypes(include=['datetime64', 'datetimetz']).columns
@@ -99,24 +113,72 @@ class AlistamientoDatos:
             return gdf
 
         except Exception as e:
+            
             print(f"❌ ERROR CRÍTICO: {e}")
+            
             return None
+        
         finally:
+            
             if os.path.exists(temp_dir):
+                
                 shutil.rmtree(temp_dir)
         
                    
 
+'''
+class AnalisisGeoespacial ():
     
-    def fecha_modelo (self):                                                   # Método para calcular la Fecha en la cual se corre el modelo
+    Contiene todos los métodos y acciones a implementar sobre las capas de información
+
+'''
+
+
+
+class AnalisisGeoespacial ():
+    
+    
+    def filtrado_registros (self, gdf, columna, valor):       # Realiza una Selección Específica sobre un GeodataFrame
+    
+    
+        if columna in gdf.columns:
+            
+            gdf_filtrado = gdf[gdf[columna] == valor].copy ()
+            
+            return  gdf_filtrado
         
-        self.fecha_actual = datetime.now ()                                    # Obtiene la fecha y hora actual como un objeto datetime
-        self.fecha_actual_format = self.fecha_actual.strftime('%Y%m%d')
         
-        self.fecha_dma_str = self.fecha_actual.strftime('%d/%m/%Y')
-        self.fecha_modelo_colum = self.fecha_actual.date ()                    # Este es el tipo de dato preferido para una columna de fecha en Pandas.
+        else:
+            
+            print (f'⚠️ La Columna {columna} No Existe')
+            
+            return gdf
+            
+            
         
         
+    
+
+
+
+
+
+
+
+
+
+
+
+'''
+Clase VisorGeografico:
+
+
+Configura el Objeto .Map y los Elementos que Contendrá.
+Al final se conecta con  streamlit   
+
+
+'''
+    
         
  
 class VisorGeografico:
@@ -131,7 +193,7 @@ class VisorGeografico:
     
     
     def _formatear_enlace (self, gdf, columna_url):                            # Método que convierte la Dirección URL de los Documentos a enlazar, a formato HTML
-        
+                                                                               # La Estructura de la dirección URL en formato HTML es url_html = f'<a href="{url_documento}" target="_blank">Abrir Documento</a>'
         
         if columna_url in gdf.columns:
             
@@ -222,7 +284,7 @@ def inicio_modelo_visor_geografico ():
     
     datos_be = AlistamientoDatos (url_drive_be)                           
     datos_nnn = AlistamientoDatos (ur_drive_nnn)
-    
+    analisis_geoespacial = AnalisisGeoespacial ()
     visor_geografico = VisorGeografico ()
     
     '''
@@ -236,12 +298,49 @@ def inicio_modelo_visor_geografico ():
     be_pozos =  datos_be.cargar_capa_zip ('Pozos_BE_PT_Estruct')
     
     
-    
-    
-    
     nnn_bloque = datos_nnn.cargar_capa_zip ('Bloque_NipaNardo_V1_20240518_AjusteLEC')
     nnn_campos = datos_nnn.cargar_capa_zip ('Campos_NipaNardo_V1_20240518_AjusteLEC')
     nnn_pozos = datos_nnn.cargar_capa_zip ('Pozos_NNN_PT_Estruct')
+    
+    
+    
+    '''
+    3- Análisis Geoespacial
+    
+    '''
+    
+    '''
+        A. Selección de Pozos que fueron Priorizados Versión No. 1 (18/02/2026)
+    '''
+    
+    
+    be_pozos_Priorizados_v1 = analisis_geoespacial.filtrado_registros (gdf = be_pozos,                           # Selección de Pozos BE, que fueron priorizados Versión No. 1 (18/02/2026)
+                                             columna = 'PrioridadVersion',
+                                             valor = 'Versión No. 1 (18/02/2026)')
+    
+    
+    nnn_pozos_Priorizados_v1 = analisis_geoespacial.filtrado_registros (gdf = nnn_pozos,                         # Selección de Pozos NN, que fueron priorizados Versión No. 1 (18/02/2026)
+                                             columna = 'PrioridadVersion',
+                                             valor = 'Versión No. 1 (18/02/2026)')
+    
+    
+    
+    '''
+    
+        B. Pozos de la Prueba Piloto
+    '''
+    
+    
+    be_pozos_prueba_piloto = analisis_geoespacial.filtrado_registros (gdf = be_pozos,                           # Selección de Pozos BE, que fueron definidos para la Pruba Piloto
+                                             columna = 'PruebaPiloto',
+                                             valor = 'SI (19/02/2026)')
+    
+    
+    nnn_pozos_prueba_piloto = analisis_geoespacial.filtrado_registros (gdf = nnn_pozos,                           # Selección de Pozos BE, que fueron definidos para la Pruba Piloto
+                                             columna = 'PruebaPiloto',
+                                             valor = 'SI (19/02/2026)')
+    
+    
     
     
     
@@ -258,11 +357,19 @@ def inicio_modelo_visor_geografico ():
                   'Campos (Budare-Elotes):':  be_campos,
                   'Campos (Nipa-Nardo-Nieblas)': nnn_campos,
                   'Pozos (Budare Elotes)': be_pozos,
-                  'Pozos (Nipa-Nardo-Nieblas)': nnn_pozos
+                  'Pozos (Nipa-Nardo-Nieblas)': nnn_pozos,
+                  'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)':  be_pozos_Priorizados_v1,
+                  'Pozos (Nipa-Nardo-Nieblas): Priorizados. Versión No. 1 (18/02/2026)': nnn_pozos_Priorizados_v1,
+                  'Pozos (Budare Elotes): Prueba Piloto':  be_pozos_prueba_piloto,
+                  'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': nnn_pozos_prueba_piloto 
                   }
     
     
-    columnas_hipervinculo = {'Pozos (Budare Elotes)': 'DocInteres1'}           # Diccionario con el Nombre de Gdf y sus campos donde existe una Dirección URL para realizar los hipervinculos 
+    
+    
+    columnas_hipervinculo = {'Pozos (Budare Elotes)': 'DocInteres1',
+                             'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)': 'DocInteres1',
+                             'Pozos (Budare Elotes): Prueba Piloto':'DocInteres1'}                                    # Diccionario con el Nombre de Gdf y sus campos donde existe una Dirección URL para realizar los hipervinculos 
     
     
     visor_geografico.generacion_mapa(capas_dicc = capas_dicc, 
