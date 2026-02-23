@@ -300,7 +300,7 @@ def inicio_modelo_visor_geografico ():
     '''
     
     url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQBQ074Duyg8T7OscEqmyEDuAfsmEFjbewfeXBmFHGQhv00?e=v0aOoK'
-    ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQCiCjL49lCWQqO2vH04AxiKAZuxZsO8ex1ujgwvVUchPp0?e=3WAaf3'
+    ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQAjRTz3dwVnRKWSgVefDVjuAcvWruJXkuavwU4ZrchB6UE?e=TN0Qnf'
  
     
     
