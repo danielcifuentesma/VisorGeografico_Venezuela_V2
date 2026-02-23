@@ -288,8 +288,8 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
-    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQBZLa9Q-uFfR7w7BCCDblkYAYUKswCdfdycUVS3dTnuNXg?e=3HxhpD'
-    ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQA6J7fhOvXcS6RSY3LetrRwAd_srk31sqy6uZ6NzlalHlk?e=WeP3Wx'
+    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQBQ074Duyg8T7OscEqmyEDuAfsmEFjbewfeXBmFHGQhv00?e=v0aOoK'
+    ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQCiCjL49lCWQqO2vH04AxiKAZuxZsO8ex1ujgwvVUchPp0?e=3WAaf3'
  
     
     
@@ -392,9 +392,16 @@ def inicio_modelo_visor_geografico ():
     
     
     
-    columnas_hipervinculo = {'Pozos (Budare Elotes)': 'DocInteres1',
-                             'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)': 'DocInteres1',
-                             'Pozos (Budare Elotes): Prueba Piloto':'DocInteres1'}                                    # Diccionario con el Nombre de Gdf y sus campos donde existe una Dirección URL para realizar los hipervinculos 
+    columnas_hipervinculo = {'Pozos (Budare Elotes): Prueba Piloto': 'URL_DiagramaPozo',
+                             'Pozos (Budare Elotes): Prueba Piloto':'URL_FichaCompletacion',
+                             'Pozos (Budare Elotes): Prueba Piloto':'URL_HistoriaPozo',
+                             'Pozos (Budare Elotes): Prueba Piloto':'URL_EvaluacionFormacion',
+                             'Pozos (Budare Elotes): Prueba Piloto':'URL_DiagnosticoAmbiental2024',
+                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':'URL_DiagramaPozo',
+                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':'URL_FichaCompletacion',
+                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':'URL_HistoriaPozo',
+                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':'URL_EvaluacionFormacion',
+                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':'URL_DiagnosticoAmbiental2024'}                                    # Diccionario con el Nombre de Gdf y sus campos donde existe una Dirección URL para realizar los hipervinculos 
     
     
     columnas_labels = {'Pozos (Budare Elotes): Prueba Piloto': 'UWISuperf',
