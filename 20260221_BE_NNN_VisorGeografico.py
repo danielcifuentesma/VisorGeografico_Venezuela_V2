@@ -192,14 +192,25 @@ class VisorGeografico:
     
     
     
-    def _formatear_enlace (self, gdf, columna_url):                            # Método que convierte la Dirección URL de los Documentos a enlazar, a formato HTML
+    def _formatear_enlace (self, gdf, columnas):                               # Formatea uno o varios campos para convertirlos en hipervínculos.
+                                                                               # Método que convierte la Dirección URL de los Documentos a enlazar, a formato HTML
                                                                                # La Estructura de la dirección URL en formato HTML es url_html = f'<a href="{url_documento}" target="_blank">Abrir Documento</a>'
         
-        if columna_url in gdf.columns:
+        if isinstance(columnas, str):                                          # Si nos pasan un solo string, lo convertimos a lista para procesarlo igual
             
-            gdf [columna_url] = gdf[columna_url].apply (lambda x: f'<a href="{x}" target="_blank" style="color: blue; font-weight: bold;">Abrir Documento 🔗</a>' 
-                if str(x).startswith('http') else x)
+            columnas = [columnas]
             
+        
+        
+        for col in columnas:
+            
+            if col in gdf.columns:
+                
+                gdf[col] = gdf[col].apply(
+                    lambda x: f'<a href="{x}" target="_blank" style="color: #0078D4; font-weight: bold;">Ver Documento 🔗</a>' 
+                    if str(x).startswith('http') else x)
+                
+                   
         return gdf
         
     
@@ -243,7 +254,7 @@ class VisorGeografico:
                 if nombre in columnas_enlaces:                                 # Si la capa tiene una columna definida como enlace, se formatea
                     
                     gdf_visualizacion = self._formatear_enlace(gdf = gdf_visualizacion, 
-                                                               columna_url = columnas_enlaces [nombre])
+                                                               columnas = columnas_enlaces [nombre])
                 
                 
                 
@@ -390,22 +401,40 @@ def inicio_modelo_visor_geografico ():
                   }
     
     
+    '''
+    HIPERVÍNCULOS
+    
+    '''
+    
+    campos_be = [
+        'URL_DiagramaPozo', 
+        'URL_FichaCompletacion', 
+        'URL_HistoriaPozo', 
+        'URL_EvaluacionFormacion', 
+        'URL_DiagnosticoAmbiental2024']
     
     
-    columnas_hipervinculo = {'Pozos (Budare Elotes): Prueba Piloto': 'URL_DiagramaPozo',
-                             'Pozos (Budare Elotes): Prueba Piloto':'URL_FichaCompletacion',
-                             'Pozos (Budare Elotes): Prueba Piloto':'URL_HistoriaPozo',
-                             'Pozos (Budare Elotes): Prueba Piloto':'URL_EvaluacionFormacion',
-                             'Pozos (Budare Elotes): Prueba Piloto':'URL_DiagnosticoAmbiental2024',
-                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':'URL_DiagramaPozo',
-                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':'URL_FichaCompletacion',
-                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':'URL_HistoriaPozo',
-                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':'URL_EvaluacionFormacion',
-                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':'URL_DiagnosticoAmbiental2024'}                                    # Diccionario con el Nombre de Gdf y sus campos donde existe una Dirección URL para realizar los hipervinculos 
+    campos_nn = [
+        'URL_DiagramaPozo', 
+        'URL_FichaCompletacion', 
+        'URL_HistoriaPozo', 
+        'URL_EvaluacionFormacion', 
+        'URL_DiagnosticoAmbiental2024']
+    
+    columnas_hipervinculo = {'Pozos (Budare Elotes): Prueba Piloto': campos_be,                                        # Diccionario con el Nombre de Gdf y sus campos donde existe una Dirección URL para realizar los hipervinculos 
+                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': campos_nn}                                    
     
     
     columnas_labels = {'Pozos (Budare Elotes): Prueba Piloto': 'UWISuperf',
                        'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': 'UWISuperf'}
+    
+    
+    
+    
+    '''
+    GENERACIÓN DEL MAPA
+    '''
+    
     
     
     visor_geografico.generacion_mapa(capas_dicc = capas_dicc,                           # Se envían las capas que se incluirán en el Objeto Mapa
