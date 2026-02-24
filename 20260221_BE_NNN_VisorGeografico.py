@@ -347,13 +347,12 @@ class VisorGeografico:
                 margin: 13px 19px !important;
                 
             }
-            /* 6- Ajuste específico para las tablas dentro del popup */
+            /* 6- Ajuste específico para el Envoltorio las tablas dentro del popup */
             
             .leaflet-popup-content-wrapper {
-                width: auto !important; /* Permite que el Ancho sea flexible */
-                height: auto !important; /* Permite que la altura  sea flexible */
+                width: auto !important;
+                height: auto !important;
                 display: inline-block !important; /* Permite que la caja crezca con el contenido */
-                padding: 0px !important; /*  Evita desfases al estirar */
                 border-radius: 8px !important;
             }
             
