@@ -308,8 +308,8 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
-    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQBQ074Duyg8T7OscEqmyEDuAfsmEFjbewfeXBmFHGQhv00?e=v0aOoK'
-    ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQAjRTz3dwVnRKWSgVefDVjuAcvWruJXkuavwU4ZrchB6UE?e=TN0Qnf'
+    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQAM5WHa8RvARaTaSBLSaXa7AdZyOdf8IXWJm3L7fjfqOO8?e=j4uUSw'
+    ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQBHykmgrq4vT4GOOiGbIhumAYJRm7fNnt7OfkzdeFQX-ro?e=cW0Ufc'
  
     
     
@@ -334,12 +334,16 @@ def inicio_modelo_visor_geografico ():
     
     be_bloque = datos_be.cargar_capa_zip ('BloqueBE_00_CoordenadasTotalesOficiales_PG_20240911_AjusteLEC')
     be_campos = datos_be.cargar_capa_zip ('BloqueBE_00_CoordenadasCamposTotalesOficiales_PG_20240911_AjusteLEC')
+    be_estaciones = datos_be.cargar_capa_zip ('PlantasEstaciones_BudareElotes_V3_20240724_AjusteLECCampo_PT')
     be_pozos =  datos_be.cargar_capa_zip ('Pozos_BE_PT_Estruct')
+    
     
     
     nnn_bloque = datos_nnn.cargar_capa_zip ('Bloque_NipaNardo_V1_20240518_AjusteLEC')
     nnn_campos = datos_nnn.cargar_capa_zip ('Campos_NipaNardo_V1_20240518_AjusteLEC')
+    nnn_estaciones = datos_nnn.cargar_capa_zip ('PlantasEstaciones_NipaNardo_V3_20240724_AjusteLECCampo_PT')
     nnn_pozos = datos_nnn.cargar_capa_zip ('Pozos_NNN_PT_Estruct')
+    
     
     
     
@@ -349,7 +353,22 @@ def inicio_modelo_visor_geografico ():
     '''
     
     '''
-        A. Selección de Pozos que fueron Priorizados Versión No. 1 (18/02/2026)
+        A. Selección de Estaciones Activas
+    
+    '''
+    
+    be_estaciones_activas = analisis_geoespacial.filtrado_registros(gdf = be_estaciones, 
+                                            columna = 'Condicion', 
+                                            valor = 'Activa')
+    
+    nnn_estaciones_activas = analisis_geoespacial.filtrado_registros(gdf = nnn_estaciones, 
+                                            columna = 'Condicion', 
+                                            valor = 'Activa')
+    
+    
+    
+    '''
+        B. Selección de Pozos que fueron Priorizados Versión No. 1 (18/02/2026)
     '''
     
     
@@ -366,7 +385,7 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
-        B. Pozos de la Prueba Piloto
+        C. Pozos de la Prueba Piloto
     '''
     
     
@@ -401,6 +420,10 @@ def inicio_modelo_visor_geografico ():
                   'Bloque Nipa-Nardo-Nieblas': nnn_bloque,
                   'Campos (Budare-Elotes):':  be_campos,
                   'Campos (Nipa-Nardo-Nieblas)': nnn_campos,
+                  'Estaciones (Budare-Elotes)':be_estaciones,
+                  'Estaciones (Nipa-Nardo-Nieblas)': nnn_estaciones,
+                  'Estaciones Activas (Budare-Elotes)':be_estaciones_activas,
+                  'Estaciones Activas (Nipa-Nardo-Nieblas)': nnn_estaciones_activas, 
                   'Pozos (Budare Elotes)': be_pozos,
                   'Pozos (Nipa-Nardo-Nieblas)': nnn_pozos,
                   'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)':  be_pozos_Priorizados_v1,
@@ -435,7 +458,9 @@ def inicio_modelo_visor_geografico ():
     
     
     columnas_labels = {'Pozos (Budare Elotes): Prueba Piloto': 'UWISuperf',
-                       'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': 'UWISuperf'}
+                       'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': 'UWISuperf',
+                       'Estaciones Activas (Budare-Elotes)': 'ID',
+                       'Estaciones Activas (Nipa-Nardo-Nieblas)': 'ID'}
     
     
     
