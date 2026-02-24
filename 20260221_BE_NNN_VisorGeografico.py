@@ -6,6 +6,7 @@ Created on Fri Feb 20 20:36:31 2026
 """
 
 import geopandas as gpd
+import pandas as pd
 import streamlit as st
 import leafmap.foliumap as leafmap
 import requests
@@ -65,6 +66,7 @@ class AlistamientoDatos:
             # ---------------------------------
 
             zip_path = os.path.join(temp_dir, "datos.zip")
+            
             with open(zip_path, "wb") as f:
                 
                 f.write(response.content)
@@ -100,29 +102,43 @@ class AlistamientoDatos:
 
             gdf = gpd.read_file(ruta_gdb, layer=nombre_capa, engine='pyogrio')
             
-            if gdf.crs != "EPSG:4326":
+            
+            if hasattr(gdf, 'crs') and gdf.crs is not None:
                 
-                gdf = gdf.to_crs(epsg=4326)
-                
+                if gdf.crs != "EPSG:4326":
+                   
+                    gdf = gdf.to_crs(epsg=4326)
+            
+            else:
+                # Si entra aquí, es una tabla pura (como be_reservas_TB)
+                print(f"ℹ️ La capa '{nombre_capa}' se cargó como Tabla (sin geometría).")
+            
+            # ---------------------------------------------------------
+
+            # Formateo de fechas (esto funciona tanto para GeoDataFrames como DataFrames)
             cols_fecha = gdf.select_dtypes(include=['datetime64', 'datetimetz']).columns
             
             for col in cols_fecha:
-                
                 gdf[col] = gdf[col].dt.strftime('%Y-%m-%d %H:%M:%S')
             
             return gdf
-
+            
+            
         except Exception as e:
             
-            print(f"❌ ERROR CRÍTICO: {e}")
-            
+            print(f"❌ ERROR CRÍTICO en {nombre_capa}: {e}")
             return None
+            
         
         finally:
             
+            # Limpieza del directorio temporal
+            
             if os.path.exists(temp_dir):
                 
-                shutil.rmtree(temp_dir)
+                shutil.rmtree(temp_dir)   
+
+      
         
                    
 
@@ -138,7 +154,7 @@ class AnalisisGeoespacial ():
 class AnalisisGeoespacial ():
     
     
-    def filtrado_registros (self, gdf, columna, valor):       # Realiza una Selección Específica sobre un GeodataFrame
+    def filtrado_registros (self, gdf, columna, valor):                        # Realiza una Selección Específica sobre un GeodataFrame
     
     
         if columna in gdf.columns:
@@ -156,7 +172,25 @@ class AnalisisGeoespacial ():
             
             
         
+    def join_tables (self, df_left, df_right, df_left_key, df_right_key, how): # Permite realizar Uniones entre DataFrames
+    
+    
+        if df_left is None or df_right is None:
+            
+            print("⚠️ Uno de los DataFrames es None. No se puede realizar el Join.")
+            
+            return df_left
         
+        
+        df_join = df_left.merge (df_right,
+                       left_on = df_left_key,
+                       right_on = df_right_key,
+                       how = how,
+                       suffixes= ('', '_tabla') )                              # Evita nombres de columnas duplicados)
+        
+        print(f"✅ Join exitoso: {len(df_join)} registros resultantes.")
+        
+        return df_join
     
 
 
@@ -327,7 +361,7 @@ def inicio_modelo_visor_geografico ():
     visor_geografico = VisorGeografico ()
     
     '''
-    2- Creación de GeodataFrames
+    2A- Creación de GeodataFrames
     
     '''
     
@@ -343,6 +377,18 @@ def inicio_modelo_visor_geografico ():
     nnn_campos = datos_nnn.cargar_capa_zip ('Campos_NipaNardo_V1_20240518_AjusteLEC')
     nnn_estaciones = datos_nnn.cargar_capa_zip ('PlantasEstaciones_NipaNardo_V3_20240724_AjusteLECCampo_PT')
     nnn_pozos = datos_nnn.cargar_capa_zip ('Pozos_NNN_PT_Estruct')
+    
+    
+    
+    '''
+    
+    2B- Creación de Dataframes
+    '''
+    
+    be_reservas_TB = datos_be.cargar_capa_zip ('PruebaPiloto_Reservas_TB_20260219')
+    
+    
+    
     
     
     
@@ -399,6 +445,20 @@ def inicio_modelo_visor_geografico ():
                                              valor = 'SI (19/02/2026)')
     
     
+    '''
+    
+       D-  PRESENTACIÓN DE RESERVAS (JOIN)
+    '''
+    
+    be_pozos_piloto_reservas = analisis_geoespacial.join_tables(df_left = be_pozos_prueba_piloto,
+                                     df_right = be_reservas_TB,
+                                     df_left_key = 'UWISuperf',
+                                     df_right_key = 'ID_UWISuperf',
+                                     how = 'left')
+    
+    
+    
+    
     
     
     
@@ -429,6 +489,7 @@ def inicio_modelo_visor_geografico ():
                   'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)':  be_pozos_Priorizados_v1,
                   'Pozos (Nipa-Nardo-Nieblas): Priorizados. Versión No. 1 (18/02/2026)': nnn_pozos_Priorizados_v1,
                   'Pozos (Budare Elotes): Prueba Piloto':  be_pozos_prueba_piloto,
+                  'Pozos (Budare Elotes): Prueba Piloto + Reservas': be_pozos_piloto_reservas, 
                   'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': nnn_pozos_prueba_piloto 
                   }
     
