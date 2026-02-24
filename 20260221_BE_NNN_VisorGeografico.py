@@ -300,7 +300,40 @@ class VisorGeografico:
                 
                    
         return gdf
+    
+    
+    
+    def _ajuste_estilos_popups (self, mapa):                                   # Ajusta el CSS (Cascading Style Sheets (Hojas de Estilo en Cascada))
+                                                                               # Si el HTML es el esqueleto o la estructura de una página web, el CSS es la "capa de pintura", el diseño y la estética.
+                                                                               # Código HTML que únicamente se lee en la páguna HTML. No en el entorno Python. Por eso, se encuentra ''' '''
+                                                                               # Activa el Scroll para garantizar que el texto no se salga del PopUp
         
+        estilo = """
+        <style>
+            /* Ajuste del contenedor general del popup */
+            .leaflet-popup-content {
+                max-width: 500px !important; /* Ancho máximo para que no se pierda */
+                max-height: 400px !important; /* Altura máxima */
+                overflow-x: auto !important; /* Scroll horizontal si hay muchas columnas */
+                overflow-y: auto !important; /* Scroll vertical */
+                font-family: 'Verdana', sans-serif;
+                font-size: 11px;
+            }
+            /* Ajuste específico para las tablas dentro del popup */
+            .leaflet-popup-content table {
+                width: 100% !important;
+                margin: 0 auto;
+            }
+        </style>
+        """        
+
+        mapa.get_root().header.add_child(leafmap.folium.Element(estilo))       # Se añade el estilo al header del mapa
+                                                                               # mapa = Objeto de leafmap.foliumap
+                                                                               # .get_root() = librería "invisible" que usa folium y leafmap para gestionar el HTML).
+                                                                               # Este método accede al objeto Figure de nivel superior. En desarrollo web, esto es el equivalente a tomar el documento HTML completo antes de que se convierta en página web. Sin este método, solo estarías hablando con el "área del mapa" y no con la "estructura del archivo".
+                                                                               # header = Clase: branca.element.Figure.Qué hace: Referencia específicamente a la etiqueta <head> del archivo HTML resultante. Es el lugar sagrado donde se colocan los estilos CSS, los títulos de la pestaña y los enlaces a librerías externas. Al llamar a .header, le dices a Python: "Lo que voy a enviarte no es un dato para el mapa (como un pozo), sino una instrucción de configuración".
+                                                                               # .add_child()  = Clase: branca.element.Element. Es el método estándar de Folium/Branca para anidar componentes. Se encarga de colocar físicamente tu código dentro de la sección que elegiste (header). Si el header fuera una carpeta física, .add_child() sería la mano que mete el documento dentro.
+                                                                               # leafmap.folium.Element(estilo) Librería/Clase: folium.elements.Element (expuesto a través de leafmap).Convierte tu texto de "Ajuste del contenedor general..." en una instrucción que el navegador sabrá leer como una regla de diseño.
     
     
     
@@ -321,6 +354,8 @@ class VisorGeografico:
         
         mapa_1 = leafmap.Map (center = self.center,                            # Se crea un Objeto Tipo Mapa     
                               zoom = self.zoom)
+         
+        self._ajuste_estilos_popups (mapa_1)                                   # Se llama al método ajuste_estilos_popups para Incluir los Scrol a los PopUps
     
         
         mapa_1.add_basemap(basemap='HYBRID',                                   # Se adiciona un Base Map
