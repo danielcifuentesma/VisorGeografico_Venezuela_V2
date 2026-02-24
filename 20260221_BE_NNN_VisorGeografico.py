@@ -316,8 +316,8 @@ class VisorGeografico:
                 
                 /*  2. Propiedades Iniciales de Dimensionamiento  */
                 
-                width: 500px !important; 
-                height: 300px !important;
+                width: 500px; 
+                height: 300px;
                 
                 /*  3. Funcionalidad Elástica del PopUP  */
                 
@@ -343,13 +343,36 @@ class VisorGeografico:
                 font-family:'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
                 font-size: 11px; /* Se mantiene el tamaño compacto para los datos */
                 line-height: 1.4; /* Mejora el espacio entre líneas de la tabla */
+                padding-right: 15px;
+                margin: 13px 19px !important;
+                
             }
             /* 6- Ajuste específico para las tablas dentro del popup */
             
             .leaflet-popup-content-wrapper {
-                width: auto !important;
-                display: inline-block !important;
+                width: auto !important; /* Permite que el Ancho sea flexible */
+                height: auto !important; /* Permite que la altura  sea flexible */
+                display: inline-block !important; /* Permite que la caja crezca con el contenido */
+                padding: 0px !important; /*  Evita desfases al estirar */
+                border-radius: 8px !important;
             }
+            
+            /* 3. Ajuste del CONTENEDOR MAESTRO (Evita que Leaflet fuerce el ancho) */
+            
+            .leaflet-popup {
+                width: auto !important;
+            }
+            
+            /* Para que el icono de resize se vea mejor */
+            
+            .leaflet-popup-content::-webkit-resizer {
+                background-color: #f1f1f1;
+                outline: 1px solid #ccc;
+                width: 12px;
+                height: 12px;
+            }
+                
+                
         </style>
         """        
 
