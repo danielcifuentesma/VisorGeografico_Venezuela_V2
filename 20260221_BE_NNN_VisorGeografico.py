@@ -227,11 +227,16 @@ class AnalisisGeoespacial ():
             
             
             html_tabla = registros_vista.to_html (index = False,
-                                                  classes = 'table table-striped table-hover',
+                                                  classes = 'table table-striped table-hover table-sm',
                                                   justify ='center',
                                                   border = 0)
 
-            return f'<div style="max-height: 200px; overflow-y: auto;">{html_tabla}</div>'       # Se envuelve en un div para controlar el scroll si son muchos registros                                                 
+            return f"""
+        <div style="max-height: 250px; max-width: 450px; overflow-y: auto; overflow-x: auto; border: 1px solid #ccc; padding: 5px;">             # Se envuelve en un div para controlar el scroll si son muchos registros 
+            <p style="font-weight: bold; margin-bottom: 5px; color: #0078D4;">Resumen de Reservas:</p>
+            {html_tabla}
+        </div>
+        """       # Se envuelve en un div para controlar el scroll si son muchos registros                                                 
       
     
     
