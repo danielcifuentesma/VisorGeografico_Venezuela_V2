@@ -192,9 +192,58 @@ class AnalisisGeoespacial ():
         
         return df_join
     
+    
+    
+    def vincular_tabla_1_a_muchos (self, gdf_padre, df_hijo, gdf_padre_Key, df_hijo_key, columnas_interes, boton_nombre):    # Crea una Columna en el Gdf padre para contener una tabla HTML 
+                                                                                                                             # con todos los registros relacionados de la Tabla Hija
+                                                                                                                             # gdf_padre = Es el Geodataframe
+                                                                                                                             # df_hijo = Es la Tabla a Relacionar. Tiene n registros asociados a 1 gdf_padre
+                                                                                                                             # gdf_padre_Key = Es la Llave del gdf_padre
+                                                                                                                             # df_hijo_key = Es la llave de df_hijo
+                                                                                                                             # columnas_interes = Lista con las columnas de df_hijo, que se desean visualizar en el popUp del Mapa
+                                                                                                                             # boton_Nombre = Es el Nombre de la Columna Nueva que aparecerá en el popUp del Mapa
+        
+        
+        def generar_html_resumen (uwi):                                        # Se filtran todos los Registros para el ID Específico   
+        
+            
+            registros = df_hijo[df_hijo [df_hijo_key] == uwi]                  # Realiza una Máscara con los registros de df_hijo_key, cuyo ID conincide con el de gdf_padre
+            
+            if registros.empty:                                                # Si No existe asociación de registros, se devuelve un texto para evitar errores o vacíos.
+                
+                return 'Sin Registros asociados'
+            
+            
+            registros_vista = registros [columnas_interes].copy ()             # Crea una Copia de los Registros, únicamente con las Columnas que 
+                                                                               # se desean visualizar en el popUp
+                                                                               
+                                                                               
+            '''
+                to_html: Este es el elemento clave. Convierte el pedazo de tabla de reservas en código HTML puro
+                index =False: Quita la columna de números de la izquierda para que la tabla se vea más limpia
+                classes: Inyecta clases de Bootstrap. Como Streamlit usa este framework, la tabla heredará un diseño profesional (filas intercaladas con color y efecto al pasar el mouse).
+            '''
+            
+            
+            
+            html_tabla = registros_vista.to_html (index = False,
+                                                  classes = 'table table-striped table-hover',
+                                                  justify ='center',
+                                                  border = 0)
 
-
-
+            return f'<div style="max-height: 200px; overflow-y: auto;">{html_tabla}</div>'       # Se envuelve en un div para controlar el scroll si son muchos registros                                                 
+      
+    
+    
+        gdf_padre [boton_nombre] = gdf_padre [gdf_padre_Key].apply (generar_html_resumen)         # Se aplica la función para crear la Columna de boton_nombre
+                                                                                                  # .apply (): La función recorre cada registro de gdf_padre. Para cada uno, toma el valor de
+                                                                                                  # gdf_padre_Key y se lo pasa al parámetro uwi de la función def generar_html_resumen (uwi):.
+                                                                                                  # El resultado lo guarda en la nueva columba.
+                                                                                                  # Ahora cada registro de gdf_padre, tiene un botón con acceso a los registros asociados con df_hijo
+    
+        print (f' ✅ Relación 1:Muchos en la columna {boton_nombre}')
+        
+        return gdf_padre
 
 
 
@@ -450,12 +499,24 @@ def inicio_modelo_visor_geografico ():
        D-  PRESENTACIÓN DE RESERVAS (JOIN)
     '''
     
-    be_pozos_piloto_reservas = analisis_geoespacial.join_tables(df_left = be_pozos_prueba_piloto,
-                                     df_right = be_reservas_TB,
-                                     df_left_key = 'UWISuperf',
-                                     df_right_key = 'ID_UWISuperf',
-                                     how = 'left')
-    
+    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = be_pozos_prueba_piloto,
+                                                    df_hijo = be_reservas_TB,
+                                                    gdf_padre_Key = 'UWISuperf',
+                                                    df_hijo_key = 'ID_UWISuperf',
+                                                    columnas_interes = ['ID_UWISuperf',
+                                                                        'Bloque',
+                                                                        'Campo',
+                                                                        'FechaPerforacion',
+                                                                        'FechaCompletamiento',
+                                                                        'FechaIniProduccion',
+                                                                        'FechaFinProduccion',
+                                                                        'ArenasCompletadas',
+                                                                        'CumOil_kBls',
+                                                                        'CumGas_MMscf',
+                                                                        'CumWater_KBls'],
+                                                    boton_nombre = 'Informacion_Reservas')
+
+   
     
     
     
@@ -489,7 +550,6 @@ def inicio_modelo_visor_geografico ():
                   'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)':  be_pozos_Priorizados_v1,
                   'Pozos (Nipa-Nardo-Nieblas): Priorizados. Versión No. 1 (18/02/2026)': nnn_pozos_Priorizados_v1,
                   'Pozos (Budare Elotes): Prueba Piloto':  be_pozos_prueba_piloto,
-                  'Pozos (Budare Elotes): Prueba Piloto + Reservas': be_pozos_piloto_reservas, 
                   'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': nnn_pozos_prueba_piloto 
                   }
     
