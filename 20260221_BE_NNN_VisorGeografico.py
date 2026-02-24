@@ -310,19 +310,45 @@ class VisorGeografico:
         
         estilo = """
         <style>
-            /* Ajuste del contenedor general del popup */
+            /*1. Ajuste del contenedor que permite el redimensionamiento*/
+            
             .leaflet-popup-content {
-                max-width: 600px !important; /* Ancho máximo para que no se pierda */
-                max-height: 400px !important; /* Altura máxima */
-                overflow-x: auto !important; /* Scroll horizontal si hay muchas columnas */
-                overflow-y: auto !important; /* Scroll vertical */
+                
+                /*  2. Propiedades Iniciales de Dimensionamiento  */
+                
+                width: 500px !important; 
+                height: 300px !important;
+                
+                /*  3. Funcionalidad Elástica del PopUP  */
+                
+                /* PROPIEDAD CLAVE: Permite ajustar el tamaño con el mouse */
+                
+                resize: both !important;
+                
+                /* IMPORTANTE: Para que 'resize' funcione, overflow no puede ser 'visible' */
+                
+                overflow: auto !important;
+                
+                
+               /*  4. límites de Seguridad: Se definen límites para que el usuario no rompa la interfaz */
+               
+                min-width: 250px !important;
+                min-height: 150px !important;
+                max-width: 900px !important;
+                max-height: 700px !important;
+                padding-right: 10px;
+                
+                /*  5- Tipografía y Tamaño (Legibilidad Técnica) */
+                
                 font-family:'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
-                font-size: 11px;
+                font-size: 11px; /* Se mantiene el tamaño compacto para los datos */
+                line-height: 1.4; /* Mejora el espacio entre líneas de la tabla */
             }
-            /* Ajuste específico para las tablas dentro del popup */
-            .leaflet-popup-content table {
-                width: 100% !important;
-                margin: 0 auto;
+            /* 6- Ajuste específico para las tablas dentro del popup */
+            
+            .leaflet-popup-content-wrapper {
+                width: auto !important;
+                display: inline-block !important;
             }
         </style>
         """        
