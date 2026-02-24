@@ -252,6 +252,71 @@ class AnalisisGeoespacial ():
 
 
 
+'''
+Clase Simbología:
+    
+    Configura la Simbología de los Gdf que se incluirán en el Mapa.
+'''
+
+
+
+class Simbologia:
+    
+    
+    
+                                                                               #  def estilo_poligono (). Define los Parámetros SGV por defecto para la Simbología de los Polígonos. Se basan en https://leafletjs.com/reference.html#path
+    def estilo_poligono (self, fill_color = '#ef91f2',
+                          color = '#e813f0',
+                          weight = 1.5,
+                          opacity = 1.0,
+                          fill_opacity = 0.4,
+                          campo_dinamico = None,
+                          simbologia_colores = None):
+        
+        '''
+            fill_color:  Color de Relleno por Defecto
+            color : Color de Borde por Defecto
+            weight: Grosor de la Línea
+            fillOpacity: Transparencia
+            campo_dinamico:  Nombre de la Columna para variar la Simbología (OPCIONAL)
+            simbologia_colores: Dicionario {valor: color} asociado al Campo Dinámico
+        
+        
+        '''
+        
+        
+        def estilo_poligono_final (feature):                                   # Aplica la Lógica para asignar la Simbología al GDF
+    
+            '''
+                1. Si el GDF únicamente tiene una Simbología se inicia con los Valores Estáticos definidos en def estilo_poligono ()
+            
+            '''
+                                                                               # estilo = {} con los Parámetros por Defecto.
+            estilo = {'fillColor': fill_color,
+                      'color': color,
+                      'weight': weight,
+                      'fill_opacity': fill_opacity,
+                      'opacity': opacity}
+
+
+            '''
+                2- Si para el GDF se definió un campo Dinámico sobre el cual, la Simbología varía. Se modifica el parámetro fillColor
+            
+            '''
+
+            if campo_dinamico and simbologia_colores:                          # Si estos 2 campos tienen valores diferentes de None, se activa el Condicional
+                
+                
+                valor_atributo = feature ['properties'].get (campo_dinamico)
+                
+                estilo ['fillColor'] = simbologia_colores.get ( valor_atributo, fill_color)             # Si el valor no está en simbologia_colores, usará el fill_color original.
+
+
+            return estilo
+        
+        
+        return estilo_poligono_final
+
 
 
 
@@ -386,18 +451,20 @@ class VisorGeografico:
     
     
     
-    def generacion_mapa (self, capas_dicc, columnas_enlaces=None, columnas_labels=None):
+    def generacion_mapa (self, capas_dicc, columnas_enlaces=None, columnas_labels=None, capa_estilos = None):
         
         
         '''
         capas_dicc = {NombreCapa:Gdf}
         columnas_enlaces = {NombreCapa: CampoURL}
         columnas_labels = {NombreCapa: CampoLabel}
+        capa_estilos = {NombreCapa: función de estilo}
         
         '''
         
         columnas_enlaces = columnas_enlaces or {}                              # Se inicializa el Dicionario de Enlaces (Hipervinculos)
         columnas_labels = columnas_labels or {}                                # Se inicializa el Diccionario de Labels
+        capa_estilos = capa_estilos or {}                                      # Se inicializa el Diccionario
         
         
         mapa_1 = leafmap.Map (center = self.center,                            # Se crea un Objeto Tipo Mapa     
@@ -420,6 +487,7 @@ class VisorGeografico:
                 
                 gdf_visualizacion = capa.copy()                                # Se copia el GDF para no alterar los datos originales del análisis
                 
+                estilo_func = capa_estilos.get (nombre)
                 
                 
                 if nombre in columnas_enlaces:                                 # Si la capa tiene una columna definida como enlace, se formatea
@@ -459,7 +527,8 @@ class VisorGeografico:
                 mapa_1.add_gdf (gdf = gdf_visualizacion,
                          layer_name = nombre,
                          info_mode = 'on_click',
-                         zoom_to_layer = False)
+                         zoom_to_layer = False,
+                         style_function =  estilo_func)
      
         
             
@@ -495,6 +564,7 @@ def inicio_modelo_visor_geografico ():
     datos_be = AlistamientoDatos (url_drive_be)                           
     datos_nnn = AlistamientoDatos (ur_drive_nnn)
     analisis_geoespacial = AnalisisGeoespacial ()
+    simbologia = Simbologia ()
     visor_geografico = VisorGeografico ()
     
     '''
@@ -691,6 +761,32 @@ def inicio_modelo_visor_geografico ():
                        'Estaciones Activas (Nipa-Nardo-Nieblas)': 'ID'}
     
     
+    '''
+    
+    DEFINICIÓN DE ESTILOS
+    
+    '''
+    
+    be_bloque_simbologia =  simbologia.estilo_poligono(color = '#370540',
+                               fill_opacity = 0.0,
+                               weight = 2.0)
+    
+    nnn_bloque_simbologia =  simbologia.estilo_poligono(color = '#370540',
+                               fill_opacity = 0.0,
+                               weight = 2.0)
+    
+    be_campos_simbologia =  simbologia.estilo_poligono(color = '#cc18c0',
+                               fill_opacity = 0.0)
+    
+    nnn_campos_simbologia =  simbologia.estilo_poligono(color = '#cc18c0',
+                               fill_opacity = 0.0)
+    
+    
+    
+    capas_estilos = {'Bloque Budare-Elotes': be_bloque_simbologia,
+                     'Bloque Nipa-Nardo-Nieblas': nnn_bloque_simbologia,
+                     'Campos (Budare-Elotes):': be_campos_simbologia,
+                     'Campos (Nipa-Nardo-Nieblas)': nnn_campos_simbologia}
     
     
     '''
@@ -701,7 +797,8 @@ def inicio_modelo_visor_geografico ():
     
     visor_geografico.generacion_mapa(capas_dicc = capas_dicc,                           # Se envían las capas que se incluirán en el Objeto Mapa
                                      columnas_enlaces = columnas_hipervinculo,
-                                     columnas_labels = columnas_labels)         
+                                     columnas_labels = columnas_labels,
+                                     capa_estilos = capas_estilos)         
     
     
     
