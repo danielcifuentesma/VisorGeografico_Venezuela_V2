@@ -520,6 +520,25 @@ def inicio_modelo_visor_geografico ():
                                                                         'CumGas_MMscf',
                                                                         'CumWater_KBls'],
                                                     boton_nombre = 'Informacion_Reservas')
+    
+    
+    nnn_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
+                                                    df_hijo = be_reservas_TB,
+                                                    gdf_padre_Key = 'UWISuperf',
+                                                    df_hijo_key = 'ID_UWISuperf',
+                                                    columnas_interes = ['ID_UWISuperf',
+                                                                        'Bloque',
+                                                                        'Campo',
+                                                                        'FechaPerforacion',
+                                                                        'FechaCompletamiento',
+                                                                        'FechaIniProduccion',
+                                                                        'FechaFinProduccion',
+                                                                        'ArenasCompletadas',
+                                                                        'CumOil_kBls',
+                                                                        'CumGas_MMscf',
+                                                                        'CumWater_KBls'],
+                                                    boton_nombre = 'Informacion_Reservas')
+    
 
    
     
