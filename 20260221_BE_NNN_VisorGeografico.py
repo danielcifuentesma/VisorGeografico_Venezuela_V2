@@ -232,7 +232,7 @@ class AnalisisGeoespacial ():
                                                   border = 0)
 
             return f"""
-        <div style="max-height: 250px; max-width: 450px; overflow-y: auto; overflow-x: auto; border: 1px solid #ccc; padding: 5px;">             /* Se envuelve en un div para controlar el scroll si son muchos registros */
+        <div style="max-height: 250px; max-width: 450px; overflow-y: auto; overflow-x: auto; border: 1px solid #ccc; padding: 5px;">            
             <p style="font-weight: bold; margin-bottom: 5px; color: #0078D4;">Resumen de Reservas:</p>
             {html_tabla}
         </div>
