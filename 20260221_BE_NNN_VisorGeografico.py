@@ -312,11 +312,11 @@ class VisorGeografico:
         <style>
             /* Ajuste del contenedor general del popup */
             .leaflet-popup-content {
-                max-width: 500px !important; /* Ancho máximo para que no se pierda */
+                max-width: 600px !important; /* Ancho máximo para que no se pierda */
                 max-height: 400px !important; /* Altura máxima */
                 overflow-x: auto !important; /* Scroll horizontal si hay muchas columnas */
                 overflow-y: auto !important; /* Scroll vertical */
-                font-family: 'Verdana', sans-serif;
+                font-family:'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
                 font-size: 11px;
             }
             /* Ajuste específico para las tablas dentro del popup */
