@@ -485,6 +485,37 @@ class VisorGeografico:
     
     
     
+    def _leyenda_dinamica (self, capa_iconos):                                 # Recorre la configuración de los Íconos y Extrae Automáticamente
+                                                                               # los pares {etiqueta:Color} para la Leyenda
+    
+    
+        leyenda_auto = {}
+        
+        
+        for nombre_capa, config in capa_iconos.items ():                       # Recorre cada Capa Configurada
+        
+            mapeo = config.get ('mapeo', {})
+            
+            
+            for valor, estilo in mapeo.items ():                               # Recorre cada Regla de Estilo
+            
+                texto_leyenda = estilo.get ('label', f'{nombre_capa} - {valor}')        # Busca si Existe un Label definido, Si NO, se usa el valor numérico
+                
+                color = estilo.get ('color', 'gray')                           # Se extrae el Color. Si no se encuentra definido, se define 'gray'
+                
+                leyenda_auto [texto_leyenda] = color                           # Se agrega al Diccionario Final
+                
+        
+        
+        return leyenda_auto
+         
+        
+            
+    
+    
+    
+    
+    
     
     def generacion_mapa (self, capas_dicc, columnas_enlaces=None, columnas_labels=None, capa_estilos = None, capa_iconos = None):
         
@@ -508,15 +539,20 @@ class VisorGeografico:
         
         
         
+        # CONFIGURACIÓN DEL MAPA
+        
         mapa_1 = leafmap.Map (center = self.center,                            # Se crea un Objeto Tipo Mapa     
                               zoom = self.zoom)
          
+        mapa_1.add_basemap(basemap='HYBRID',                                   # Se adiciona un Base Map
+                          show=True,)
+        
+        
+        
+        
         self._ajuste_estilos_popups (mapa_1)                                   # Se llama al método ajuste_estilos_popups para Incluir los Scrol a los PopUps
     
         
-        mapa_1.add_basemap(basemap='HYBRID',                                   # Se adiciona un Base Map
-                          show=True,)
- 
     
         simbologia_aux = Simbologia()                                          # Se instancia la Clase Simbología para acceder al Método estilo_punto_icono
     
@@ -570,9 +606,10 @@ class VisorGeografico:
                     
                     config_capa = capa_iconos[nombre]
                     
-                    grupo_capa = folium.FeatureGroup (name = nombre)           # Crea el Grupo de Capa. Permite Encender/Apagar las Capas.
+                    grupo_capa = folium.FeatureGroup (name = nombre)           # Crea el Grupo de Capa. Permite Encender/Apagar las Capas en el Layer Control
                     
-                    for i, fila in gdf_visualizacion.iterrows():
+                    
+                    for i, fila in gdf_visualizacion.iterrows():               # Recorre cada Registro Individualmente. i es el índice (ID) y fila contiene los datos (Atributos+Geometría)
                         
                         config_final = simbologia_aux.estilo_punto_icono(      # Permite obtener la Configuración del Ícono
                             feature={'properties': fila},
@@ -671,7 +708,14 @@ class VisorGeografico:
                         style_function = estilo_func
                     )
                     
-                    
+        
+        dicc_leyenada_final = self._leyenda_dinamica(capa_iconos)              # Se llama al método _leyenda_dinamica
+        
+        
+        if dicc_leyenada_final:
+            
+            mapa_1.add_legend (title = 'CONVENCIONES',                         # Se adiciona la Leyenda al Mapa
+                               legend_dict =  dicc_leyenada_final)
       
         
             
@@ -959,17 +1003,17 @@ def inicio_modelo_visor_geografico ():
         'Pozos (Budare Elotes): Prueba Piloto':{
             'campo': 'CategIni',
              'mapeo': {
-                 1: {'icon': 'play', 'color': 'green', 'prefix': 'fa'},
-                 2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa'},
-                 3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa'}
+                 1: {'icon': 'play', 'color': 'green', 'prefix': 'fa', 'label': 'Pozo Categoria 1'},
+                 2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa', 'label': 'Pozo Categoria 2'},
+                 3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa', 'label': 'Pozo Categoria 3'}
                       }
                                                },
         'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':{
             'campo': 'CategIni',
              'mapeo': {
-                 1: {'icon': 'play', 'color': 'green', 'prefix': 'fa'},
-                 2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa'},
-                 3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa'}
+                 1: {'icon': 'play', 'color': 'green', 'prefix': 'fa', 'label': 'Pozo Categoria 1'},
+                 2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa', 'label': 'Pozo Categoria 2'},
+                 3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa', 'label': 'Pozo Categoria 3'}
                       }
                                                      }
                            }
