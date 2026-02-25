@@ -529,7 +529,7 @@ class VisorGeografico:
         
         '''
         
-        # Se inicializan los Diccionarios para evitar errores si llegan vacíos
+        # 1- Se inicializan los Diccionarios para evitar errores si llegan vacíos
         
         
         columnas_enlaces = columnas_enlaces or {}                              # Se inicializa el Dicionario de Enlaces (Hipervinculos)
@@ -539,13 +539,29 @@ class VisorGeografico:
         
         
         
-        # CONFIGURACIÓN DEL MAPA
+        # 2- CONFIGURACIÓN DEL MAPA
         
         mapa_1 = leafmap.Map (center = self.center,                            # Se crea un Objeto Tipo Mapa     
                               zoom = self.zoom)
          
         mapa_1.add_basemap(basemap='HYBRID',                                   # Se adiciona un Base Map
                           show=True,)
+        
+        
+        # 3- GENERACIÓN MINI MAPA
+        
+         
+        mini_mapa_1 = folium.plugins.MiniMap (tile_layer = 'OpenStreetMap',
+                            position = 'bottomleft',
+                            width = 150,
+                            height = 150,
+                            zoom_level_offset = -5,
+                            toggle_display = True)
+        
+        
+        mapa_1.add_child (mini_mapa_1)        
+        
+        
         
         
         
