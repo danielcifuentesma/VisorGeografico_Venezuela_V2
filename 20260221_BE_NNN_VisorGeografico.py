@@ -572,27 +572,66 @@ class VisorGeografico:
                             simbologia_colores_pt=config_capa['mapeo']
                         )
                         
-                        # 1. Generamos la tabla con Pandas
-                        # escape=False es VITAL: permite que los enlaces HTML (<a>) funcionen y no se vean como texto
-                        tabla_html = gdf_visualizacion.loc[[i]].drop(columns=['geometry'], errors='ignore').to_html(
-                            classes='table table-striped table-hover table-condensed',
-                            justify='center',
-                            escape=False 
+                        # 1. TRANSPOSICIÓN Y LIMPIEZA DE DATOS (Recuperar Verticalidad)
+                        # Usamos .loc[[i]] para evitar el IndexError
+                        df_fila = gdf_visualizacion.loc[[i]].drop(columns=['geometry'], errors='ignore')
+                        df_vertical = df_fila.transpose().reset_index()
+                        df_vertical.columns = ['Atributo', 'Valor'] # Renombramos cabeceras
+                        
+                        # 2. GENERAR TABLA HTML RAW (Sin estilos feos por defecto)
+                        tabla_html = df_vertical.to_html(
+                            index=False,
+                            header=True,
+                            border=0, # Quitamos bordes dobles antiguos
+                            escape=False, # Mantiene los enlaces vivos
+                            classes='styled-table' # Clase para nuestro CSS personalizado
                         )
                         
-                        # 2. Creamos el contenedor con SCROLL (Esto es lo que faltaba)
-                        html_con_estilo = f"""
-                        <div style="
-                            max-height: 300px; 
-                            overflow-y: auto; 
-                            font-family: verdana; 
-                            font-size: 10pt;
-                        ">
+                        # 3. INYECTAR ESTILOS CSS (Recuperar estética Century y colores)
+                        estilo_css = """
+                        <style>
+                            .styled-table {
+                                font-family: 'Century Gothic', 'Century', sans-serif;
+                                border-collapse: collapse;
+                                width: 100%;
+                                font-size: 12px;
+                            }
+                            .styled-table td, .styled-table th {
+                                border: 1px solid #ddd;
+                                padding: 8px;
+                            }
+                            /* Color de fondo para filas pares (Efecto Zebra) */
+                            .styled-table tr:nth-child(even){background-color: #f2f2f2;}
+                            
+                            /* Efecto Hover al pasar el mouse */
+                            .styled-table tr:hover {background-color: #ddd;}
+                            
+                            /* Estilo del Encabezado (Atributo / Valor) */
+                            .styled-table th {
+                                padding-top: 10px;
+                                padding-bottom: 10px;
+                                text-align: left;
+                                background-color: #4CAF50; /* O el color corporativo que prefieras */
+                                color: white;
+                            }
+                            /* Negrita para la columna de Atributos (Primera columna) */
+                            .styled-table td:first-child {
+                                font-weight: bold;
+                                color: #333;
+                                width: 40%; /* Ancho fijo para la etiqueta */
+                            }
+                        </style>
+                        """
+                        
+                        # 4. ARMAR EL POPUP FINAL (CSS + Scroll + Tabla)
+                        html_completo = f"""
+                        {estilo_css}
+                        <div style="max-height: 300px; overflow-y: auto;">
                             {tabla_html}
                         </div>
                         """
 
-                        # 3. Creamos el marcador
+                        # 5. CREAR MARCADOR
                         folium.Marker(
                             location=[fila.geometry.y, fila.geometry.x],
                             icon=folium.Icon(
@@ -600,8 +639,7 @@ class VisorGeografico:
                                 color=config_final['color'],
                                 prefix=config_final['prefix']
                             ),
-                            # Pasamos el HTML estilizado
-                            popup=folium.Popup(html_con_estilo, max_width=450)
+                            popup=folium.Popup(html_completo, max_width=450)
                         ).add_to(mapa_1)
                                        
                                 
