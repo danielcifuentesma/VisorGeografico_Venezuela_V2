@@ -563,28 +563,45 @@ class VisorGeografico:
                 
                 
                 if nombre in capa_iconos:
-                    
-                    config_capa = capa_iconos [nombre]
-                    
+                    config_capa = capa_iconos[nombre]
                     
                     for i, fila in gdf_visualizacion.iterrows():
-                        
-                        config_final = simbologia_aux.estilo_punto_icono (feature = {'properties': fila},
-                                                                          campo_dinamico = config_capa ['campo'],
-                                                                          simbologia_colores_pt = config_capa ['mapeo'])
-                        
-                        html_tabla = gdf_visualizacion.loc[[i]].drop(columns=['geometry'], errors='ignore').to_html(
-                            classes='table table-striped', # Estilo opcional de Bootstrap
-                            justify='center'
+                        config_final = simbologia_aux.estilo_punto_icono(
+                            feature={'properties': fila},
+                            campo_dinamico=config_capa['campo'],
+                            simbologia_colores_pt=config_capa['mapeo']
                         )
-                
-                
-                        folium.Marker (location = [fila.geometry.y, fila.geometry.x],
-                                       icon = folium.Icon (icon = config_final ['icon'],
-                                                           color = config_final ['color'],
-                                                           prefix = config_final ['prefix']
-                                                           ),
-                                       popup = folium.Popup(html_tabla, max_width=450)
+                        
+                        # 1. Generamos la tabla con Pandas
+                        # escape=False es VITAL: permite que los enlaces HTML (<a>) funcionen y no se vean como texto
+                        tabla_html = gdf_visualizacion.loc[[i]].drop(columns=['geometry'], errors='ignore').to_html(
+                            classes='table table-striped table-hover table-condensed',
+                            justify='center',
+                            escape=False 
+                        )
+                        
+                        # 2. Creamos el contenedor con SCROLL (Esto es lo que faltaba)
+                        html_con_estilo = f"""
+                        <div style="
+                            max-height: 300px; 
+                            overflow-y: auto; 
+                            font-family: verdana; 
+                            font-size: 10pt;
+                        ">
+                            {tabla_html}
+                        </div>
+                        """
+
+                        # 3. Creamos el marcador
+                        folium.Marker(
+                            location=[fila.geometry.y, fila.geometry.x],
+                            icon=folium.Icon(
+                                icon=config_final['icon'],
+                                color=config_final['color'],
+                                prefix=config_final['prefix']
+                            ),
+                            # Pasamos el HTML estilizado
+                            popup=folium.Popup(html_con_estilo, max_width=450)
                         ).add_to(mapa_1)
                                        
                                 
