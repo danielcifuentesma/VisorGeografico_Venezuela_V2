@@ -550,11 +550,22 @@ class VisorGeografico:
         
         # 3- GENERACIÓN MINI MAPA
         
+        '''
+            
+            Si bien, leafmap tiene un método add_minimap (), los parámetros definidos son muy básicos, según lo 
+            establecido por folium class folium.plugins.MiniMap ().Por esta razón, utilizamos a Folium para crear
+            el Objeto mini_mapa_1.
+            
+            Para vincular este objeto al Mapa, es necesario utilizar el método .add_child () de Folium.
+            
+            
+        '''
+        
          
         mini_mapa_1 = folium.plugins.MiniMap (tile_layer = 'OpenStreetMap',
                             position = 'bottomleft',
-                            width = 150,
-                            height = 150,
+                            width = 200,
+                            height = 200,
                             zoom_level_offset = -5,
                             toggle_display = True)
         
