@@ -9,6 +9,7 @@ import geopandas as gpd
 import pandas as pd
 import streamlit as st
 import leafmap.foliumap as leafmap
+import leafmap.common as leafmap_tools
 import folium
 import requests
 import tempfile
@@ -571,6 +572,11 @@ class VisorGeografico:
                         config_final = simbologia_aux.estilo_punto_icono (feature = {'properties': fila},
                                                                           campo_dinamico = config_capa ['campo'],
                                                                           simbologia_colores_pt = config_capa ['mapeo'])
+                        
+                        html_tabla = gdf_visualizacion.loc[[i]].drop(columns=['geometry'], errors='ignore').to_html(
+                            classes='table table-striped', # Estilo opcional de Bootstrap
+                            justify='center'
+                        )
                 
                 
                         folium.Marker (location = [fila.geometry.y, fila.geometry.x],
@@ -578,8 +584,8 @@ class VisorGeografico:
                                                            color = config_final ['color'],
                                                            prefix = config_final ['prefix']
                                                            ),
-                                       popup = folium.Popup (leafmap.gdf_to_html (gdf_visualizacion.iloc[[i]]), max_width=450)
-                                       ).add_to (mapa_1)
+                                       popup = folium.Popup(html_tabla, max_width=450)
+                        ).add_to(mapa_1)
                                        
                                 
                 
@@ -884,7 +890,8 @@ def inicio_modelo_visor_geografico ():
     visor_geografico.generacion_mapa(capas_dicc = capas_dicc,                           # Se envían las capas que se incluirán en el Objeto Mapa
                                      columnas_enlaces = columnas_hipervinculo,
                                      columnas_labels = columnas_labels,
-                                     capa_estilos = capas_estilos)         
+                                     capa_estilos = capas_estilos,
+                                     capa_iconos = capas_iconos_config)         
     
     
     
