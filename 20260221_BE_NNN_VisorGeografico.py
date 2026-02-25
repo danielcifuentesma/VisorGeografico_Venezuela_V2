@@ -927,7 +927,7 @@ def inicio_modelo_visor_geografico ():
         'Pozos (Budare Elotes): Prueba Piloto':{
             'campo': 'CategIni',
              'mapeo': {
-                 1: {'icon': 'play', 'color': 'blue', 'prefix': 'fa'},
+                 1: {'icon': 'play', 'color': 'green', 'prefix': 'fa'},
                  2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa'},
                  3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa'}
                       }
@@ -935,7 +935,7 @@ def inicio_modelo_visor_geografico ():
         'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':{
             'campo': 'CategIni',
              'mapeo': {
-                 1: {'icon': 'play', 'color': 'blue', 'prefix': 'fa'},
+                 1: {'icon': 'play', 'color': 'green', 'prefix': 'fa'},
                  2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa'},
                  3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa'}
                       }
