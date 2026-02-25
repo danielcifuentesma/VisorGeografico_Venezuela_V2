@@ -586,7 +586,8 @@ class VisorGeografico:
         # 2.D. PRESENTACIÓN DE COORDENADAS
         
         
-        formato_mouse = "function(num) {return L.Util.formatNum(num, 5) + ' º ';};"              # Script de Java que evita que aparezcan números con 15 decimales flotantes   
+        formatter_lat = "function(num) {return 'Latitud: ' + L.Util.formatNum(num, 5);};"                 # Script de Java que evita que aparezcan números con 15 decimales flotantes   
+        formatter_lon = "function(num) {return 'Longitud: ' + L.Util.formatNum(num, 5);};"     
         
         coordenadas_wgs84_1 = folium.plugins.MousePosition (position ='bottomright',
                                                             separator =' / ',
@@ -594,8 +595,8 @@ class VisorGeografico:
                                                             lng_first = True,
                                                             num_digits = 5,
                                                             prefix = 'WGS84',
-                                                            lat_formatter = formato_mouse,
-                                                            lng_formatter = formato_mouse)
+                                                            lat_formatter = formatter_lat,
+                                                            lng_formatter = formatter_lon)
         
         
         mapa_1.add_child (coordenadas_wgs84_1)
