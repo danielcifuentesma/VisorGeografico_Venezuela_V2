@@ -1081,6 +1081,22 @@ def inicio_modelo_visor_geografico ():
                  2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa', 'label': 'Pozo Categoria 2'},
                  3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa', 'label': 'Pozo Categoria 3'}
                       }
+                                                     },
+        'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)':{
+            'campo': 'CategIni',
+             'mapeo': {
+                 1: {'icon': 'play', 'color': 'green', 'prefix': 'fa', 'label': 'Pozo Categoria 1'},
+                 2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa', 'label': 'Pozo Categoria 2'},
+                 3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa', 'label': 'Pozo Categoria 3'}
+                      }
+                                               },
+        'Pozos (Nipa-Nardo-Nieblas): Priorizados. Versión No. 1 (18/02/2026)':{
+            'campo': 'CategIni',
+             'mapeo': {
+                 1: {'icon': 'play', 'color': 'green', 'prefix': 'fa', 'label': 'Pozo Categoria 1'},
+                 2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa', 'label': 'Pozo Categoria 2'},
+                 3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa', 'label': 'Pozo Categoria 3'}
+                      }
                                                      }
                            }
     
