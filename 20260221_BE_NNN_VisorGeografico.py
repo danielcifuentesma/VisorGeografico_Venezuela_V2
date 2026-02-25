@@ -9,6 +9,7 @@ import geopandas as gpd
 import pandas as pd
 import streamlit as st
 import leafmap.foliumap as leafmap
+import folium
 import requests
 import tempfile
 import os
@@ -316,8 +317,41 @@ class Simbologia:
         
         
         return estilo_poligono_final
+    
+    
+    
+    
+    def estilo_punto_icono (self, feature, campo_dinamico, simbologia_colores_pt,               # Extrae la Configuración del Ícono para un Punto Específico
+                            icon = 'info-sign',
+                            color = 'gray',
+                            prefix = 'glyphicon'):               
 
-
+        '''
+            feature: Registro de la Estructura geoJSON
+            campo_dinamico: Nombre de la Columna para variar la Simbología (OPCIONAL)
+            simbologia_colores_pt: Dicionario {valor: color} asociado al Campo Dinámico
+            
+        
+        '''
+        
+            # 1. Se define el Estilo por Defecto:
+        
+        estilo_icono_pt = {'icon': icon,
+                           'color': color,
+                           'prefix': prefix}
+        
+        
+            # 2. Se extrae el valor de la columna seleccionada para cambiar la simbología (OPCIONAL)
+            
+        
+        valor_atributo_pt = feature ['properties'].get (campo_dinamico)              # Se extrae el Valor de la Columna
+        
+        
+            # 3. sI
+        
+        return simbologia_colores_pt.get (valor_atributo_pt, estilo_icono_pt)        # Si encuentra el valor en el diccionario, devuelve su config personalizada
+                                                                                     # Si NO lo encuentra, devuelve el 'estilo_defecto' (el gris con info-sign).
+    
 
 
 
@@ -451,7 +485,7 @@ class VisorGeografico:
     
     
     
-    def generacion_mapa (self, capas_dicc, columnas_enlaces=None, columnas_labels=None, capa_estilos = None):
+    def generacion_mapa (self, capas_dicc, columnas_enlaces=None, columnas_labels=None, capa_estilos = None, capa_iconos = None):
         
         
         '''
@@ -459,12 +493,15 @@ class VisorGeografico:
         columnas_enlaces = {NombreCapa: CampoURL}
         columnas_labels = {NombreCapa: CampoLabel}
         capa_estilos = {NombreCapa: función de estilo}
+        capa_iconos = {NombreCapa: {Campo Dinámico:{Atributo: Opciones Personalización}}}
         
         '''
         
         columnas_enlaces = columnas_enlaces or {}                              # Se inicializa el Dicionario de Enlaces (Hipervinculos)
         columnas_labels = columnas_labels or {}                                # Se inicializa el Diccionario de Labels
         capa_estilos = capa_estilos or {}                                      # Se inicializa el Diccionario
+        capa_iconos = capa_iconos or {}                                        # Se inicializa el Diccionario
+        
         
         
         mapa_1 = leafmap.Map (center = self.center,                            # Se crea un Objeto Tipo Mapa     
@@ -477,9 +514,11 @@ class VisorGeografico:
                           show=True,)
  
     
-    
+        simbologia_aux = Simbologia()                                          # Se instancia la Clase Simbología para acceder al Método estilo_punto_icono
     
         
+    
+    
         for nombre, capa in capas_dicc.items():                                # Adiciona todas las Capas al Objeto Mapa
             
             if capa is not None:
@@ -490,18 +529,20 @@ class VisorGeografico:
                 estilo_func = capa_estilos.get (nombre)
                 
                 
+                # 1. FORMATEO DE HIPERVÍNCULOS
+                
                 if nombre in columnas_enlaces:                                 # Si la capa tiene una columna definida como enlace, se formatea
                     
                     gdf_visualizacion = self._formatear_enlace(gdf = gdf_visualizacion, 
                                                                columnas = columnas_enlaces [nombre])
                 
                 
+                # 2. LABELS CON MÁSCARA CSS   
+                    
                 
                 if nombre in columnas_labels:                                  # Etiqueta siempre encendida
                     
-                    
-                    
-                   
+                
                     mascara_css = (                                            # Definimos un halo negro para texto blanco
                         "white; "                                              # El text-shadow crea una máscara en las 4 esquinas del texto
                         "text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, "
@@ -517,19 +558,43 @@ class VisorGeografico:
                         font_weight="bold")         
                     
                     
+                # 3. ICONOS PARA GDF = PUNTOS
                 
                 
+                if nombre in capa_iconos:
+                    
+                    config_capa = capa_iconos [nombre]
+                    
+                    
+                    for i, fila in gdf_visualizacion.iterrows():
+                        
+                        config_final = simbologia_aux.estilo_punto_icono (feature = {'properties': fila},
+                                                                          campo_dinamico = config_capa ['campo'],
+                                                                          simbologia_colores_pt = config_capa ['mapeo'])
                 
                 
+                        folium.Marker (location = [fila.geometry.y, fila.geometry.x],
+                                       icon = folium.Icon (icon = config_final ['icon'],
+                                                           color = config_final ['color'],
+                                                           prefix = config_final ['prefix']
+                                                           ),
+                                       popup = folium.Popup (leafmap.gdf_to_html (gdf_visualizacion.iloc[[i]]), max_width=450)
+                                       ).add_to (mapa_1)
+                                       
+                                
                 
-                
-                
-                mapa_1.add_gdf (gdf = gdf_visualizacion,
-                         layer_name = nombre,
-                         info_mode = 'on_click',
-                         zoom_to_layer = False,
-                         style_function =  estilo_func)
-     
+                else:
+                    
+                    mapa_1.add_gdf(
+                        gdf = gdf_visualizacion,
+                        layer_name = nombre,
+                        info_mode = 'on_click',
+                        zoom_to_layer = False,
+                        style_function = estilo_func
+                    )
+                    
+                    
+      
         
             
         mapa_1.to_streamlit (width = 900,
@@ -767,6 +832,10 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
+           # ESTILOS PARA GEOMETRÍAS TIPO POLÍGONO
+    
+    
+    
     be_bloque_simbologia =  simbologia.estilo_poligono(color = '#370540',
                                fill_opacity = 0.0,
                                weight = 2.0)
@@ -787,6 +856,23 @@ def inicio_modelo_visor_geografico ():
                      'Bloque Nipa-Nardo-Nieblas': nnn_bloque_simbologia,
                      'Campos (Budare-Elotes):': be_campos_simbologia,
                      'Campos (Nipa-Nardo-Nieblas)': nnn_campos_simbologia}
+    
+    
+    
+                    # ESTILOS PARA GEOMETRÍAS TIPO PUNTO
+    
+    
+    capas_iconos_config = {
+        'Pozos (Budare Elotes): Prueba Piloto':{
+            'campo': 'CategIni',
+             'mapeo': {
+                 1: {'icon': 'play', 'color': 'blue', 'prefix': 'fa'},
+                 2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa'},
+                 3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa'}
+                      }
+                                               }
+                           }
+    
     
     
     '''
