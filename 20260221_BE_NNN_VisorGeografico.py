@@ -498,6 +498,9 @@ class VisorGeografico:
         
         '''
         
+        # Se inicializan los Diccionarios para evitar errores si llegan vacíos
+        
+        
         columnas_enlaces = columnas_enlaces or {}                              # Se inicializa el Dicionario de Enlaces (Hipervinculos)
         columnas_labels = columnas_labels or {}                                # Se inicializa el Diccionario de Labels
         capa_estilos = capa_estilos or {}                                      # Se inicializa el Diccionario
@@ -518,6 +521,7 @@ class VisorGeografico:
         simbologia_aux = Simbologia()                                          # Se instancia la Clase Simbología para acceder al Método estilo_punto_icono
     
         
+       # Bucle Principal que recorre las Capas de entrada
     
     
         for nombre, capa in capas_dicc.items():                                # Adiciona todas las Capas al Objeto Mapa
@@ -563,31 +567,39 @@ class VisorGeografico:
                 
                 
                 if nombre in capa_iconos:
+                    
                     config_capa = capa_iconos[nombre]
                     
+                    grupo_capa = folium.FeatureGroup (name = nombre)           # Crea el Grupo de Capa. Permite Encender/Apagar las Capas.
+                    
                     for i, fila in gdf_visualizacion.iterrows():
-                        config_final = simbologia_aux.estilo_punto_icono(
+                        
+                        config_final = simbologia_aux.estilo_punto_icono(      # Permite obtener la Configuración del Ícono
                             feature={'properties': fila},
                             campo_dinamico=config_capa['campo'],
                             simbologia_colores_pt=config_capa['mapeo']
                         )
                         
                         # 1. TRANSPOSICIÓN Y LIMPIEZA DE DATOS (Recuperar Verticalidad)
-                        # Usamos .loc[[i]] para evitar el IndexError
-                        df_fila = gdf_visualizacion.loc[[i]].drop(columns=['geometry'], errors='ignore')
-                        df_vertical = df_fila.transpose().reset_index()
-                        df_vertical.columns = ['Atributo', 'Valor'] # Renombramos cabeceras
+                        
+                        df_fila = gdf_visualizacion.loc[[i]].drop(columns=['geometry'], errors='ignore')   # Se usa .loc[[i]] para evitar el IndexError
+                        
+                        df_vertical = df_fila.transpose().reset_index()                                    # Transpone los datos: De Horizontal a Vertical (Atributo/Valor)
+                        
+                        df_vertical.columns = ['Atributo', 'Valor']                                        # Se Renombran las cabeceras
                         
                         # 2. GENERAR TABLA HTML RAW (Sin estilos feos por defecto)
+                        
                         tabla_html = df_vertical.to_html(
                             index=False,
                             header=True,
-                            border=0, # Quitamos bordes dobles antiguos
-                            escape=False, # Mantiene los enlaces vivos
-                            classes='styled-table' # Clase para nuestro CSS personalizado
+                            border=0,                                          # Se quitqn los bordes dobles antiguos
+                            escape=False,                                      # Mantiene los enlaces vivos
+                            classes='styled-table'                             # Clase para nuestro CSS personalizado
                         )
                         
                         # 3. INYECTAR ESTILOS CSS (Recuperar estética Century y colores)
+                       
                         estilo_css = """
                         <style>
                             .styled-table {
@@ -624,6 +636,7 @@ class VisorGeografico:
                         """
                         
                         # 4. ARMAR EL POPUP FINAL (CSS + Scroll + Tabla)
+                        
                         html_completo = f"""
                         {estilo_css}
                         <div style="max-height: 300px; overflow-y: auto;">
@@ -631,7 +644,8 @@ class VisorGeografico:
                         </div>
                         """
 
-                        # 5. CREAR MARCADOR
+                        # 5. CREAR MARCADOR Y LO AÑADE AL GRUPO CREADO
+                       
                         folium.Marker(
                             location=[fila.geometry.y, fila.geometry.x],
                             icon=folium.Icon(
@@ -640,7 +654,10 @@ class VisorGeografico:
                                 prefix=config_final['prefix']
                             ),
                             popup=folium.Popup(html_completo, max_width=450)
-                        ).add_to(mapa_1)
+                        ).add_to(grupo_capa)                                   # Se añade el folium.map.FeatureGroup
+                        
+                    
+                    grupo_capa.add_to (mapa_1)                                 # Se añade el Grupo completo al Mapa
                                        
                                 
                 
