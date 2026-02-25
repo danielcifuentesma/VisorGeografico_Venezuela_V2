@@ -674,8 +674,8 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
-    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQAM5WHa8RvARaTaSBLSaXa7AdZyOdf8IXWJm3L7fjfqOO8?e=j4uUSw'
-    ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQBHykmgrq4vT4GOOiGbIhumAYJRm7fNnt7OfkzdeFQX-ro?e=cW0Ufc'
+    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQB09BUzYmdwRItVi2O_JKxdAQtgQQqW1TyiXgOG1_H_0SI?e=OYV6rD'
+    ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQD8Q0kbD-IOQLFS1TcLE9SIAaKjjfr53MzJUz0yb_Aq8Kk?e=eTMqnq'
  
     
     
@@ -862,6 +862,8 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
+        # 1- HIPERVINCULOS DE POZOS.
+    
     campos_be = [
         'URL_DiagramaPozo', 
         'URL_FichaCompletacion', 
@@ -870,15 +872,28 @@ def inicio_modelo_visor_geografico ():
         'URL_DiagnosticoAmbiental2024']
     
     
-    campos_nn = [
+    campos_nnn = [
         'URL_DiagramaPozo', 
         'URL_FichaCompletacion', 
         'URL_HistoriaPozo', 
         'URL_EvaluacionFormacion', 
         'URL_DiagnosticoAmbiental2024']
     
+    
+        # 2- HIPERVINCULOS DE ESTACIONES.
+        
+    campos_be_estaciones = ['URL_DiagnosticoAmbiental2024']  
+    campos_nnn_estaciones = ['URL_DiagnosticoAmbiental2024'] 
+        
+        
+        
+        # ---------------------------------------------------------------------------------
+        
+    
     columnas_hipervinculo = {'Pozos (Budare Elotes): Prueba Piloto': campos_be,                                        # Diccionario con el Nombre de Gdf y sus campos donde existe una Dirección URL para realizar los hipervinculos 
-                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': campos_nn}                                    
+                             'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': campos_nnn,
+                             'Estaciones Activas (Budare-Elotes)': campos_be_estaciones,
+                             'Estaciones Activas (Nipa-Nardo-Nieblas)': campos_nnn_estaciones}                                    
     
     
     columnas_labels = {'Pozos (Budare Elotes): Prueba Piloto': 'UWISuperf',
