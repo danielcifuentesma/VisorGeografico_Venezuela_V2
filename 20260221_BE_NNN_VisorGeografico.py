@@ -539,7 +539,7 @@ class VisorGeografico:
         
         
         
-        # 2- CONFIGURACIÓN DEL MAPA
+        # 2A- CONFIGURACIÓN DEL MAPA
         
         mapa_1 = leafmap.Map (center = self.center,                            # Se crea un Objeto Tipo Mapa     
                               zoom = self.zoom)
@@ -548,7 +548,7 @@ class VisorGeografico:
                           show=True,)
         
         
-        # TÍTULO DEL MAPA
+        # 2B-TÍTULO DEL MAPA
         
         estilo_titulo = {
             'font-family': 'Century Gothic, sans-serif',                       # Propiedades CSS
@@ -569,8 +569,24 @@ class VisorGeografico:
         
         
         
+        # 2C. MEDICIÓN DE LONGITUDES / ÁREAS
         
-        # 3- GENERACIÓN MINI MAPA
+        
+        control_medicion_1 = folium.plugins.MeasureControl (position = 'topleft',
+                                       primary_length_unit = 'meters',
+                                       secondary_length_unit = 'kilometers',
+                                       primary_area_unit = 'sqmeters',
+                                       secondary_area_unit = 'acres')
+        
+        
+        mapa_1.add_child (control_medicion_1)
+        
+        
+        
+        
+        
+        
+        # 2D- GENERACIÓN MINI MAPA
         
         '''
             
