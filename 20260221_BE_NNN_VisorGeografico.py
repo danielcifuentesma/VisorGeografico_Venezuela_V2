@@ -931,7 +931,15 @@ def inicio_modelo_visor_geografico ():
                  2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa'},
                  3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa'}
                       }
-                                               }
+                                               },
+        'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':{
+            'campo': 'CategIni',
+             'mapeo': {
+                 1: {'icon': 'play', 'color': 'blue', 'prefix': 'fa'},
+                 2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa'},
+                 3: {'icon': 'ban', 'color': 'red', 'prefix': 'fa'}
+                      }
+                                                     }
                            }
     
     
