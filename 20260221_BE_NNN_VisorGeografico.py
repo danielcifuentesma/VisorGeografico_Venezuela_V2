@@ -583,10 +583,27 @@ class VisorGeografico:
         
         
         
+        # 2.D. PRESENTACIÓN DE COORDENADAS
+        
+        
+        formato_mouse = "function(num) {return L.Util.formatNum(num, 5) + ' º ';};"              # Script de Java que evita que aparezcan números con 15 decimales flotantes   
+        
+        coordenadas_wgs84_1 = folium.plugins.MousePosition (position ='bottomright',
+                                                            separator =' / ',
+                                                            empty_string ='Fuera de Rango',
+                                                            lng_first = True,
+                                                            num_digits = 5,
+                                                            prefix = 'WGS84',
+                                                            lat_formatter = formato_mouse,
+                                                            lng_formatter = formato_mouse)
+        
+        
+        mapa_1.add_child (coordenadas_wgs84_1)
         
         
         
-        # 2D- GENERACIÓN MINI MAPA
+        
+        # 2E- GENERACIÓN MINI MAPA
         
         '''
             
