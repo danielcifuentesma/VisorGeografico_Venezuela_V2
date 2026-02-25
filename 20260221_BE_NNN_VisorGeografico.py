@@ -548,6 +548,28 @@ class VisorGeografico:
                           show=True,)
         
         
+        # TÍTULO DEL MAPA
+        
+        estilo_titulo = {
+            'font-family': 'Century Gothic, sans-serif',                       # Propiedades CSS
+            'font-weight': 'bold',
+            'color': '#333333',              # Texto gris oscuro
+            'background-color': 'rgba(255, 255, 255, 0.8)', # Fondo blanco al 80% de opacidad
+            'padding': '10px',               # Espacio interno
+            'border-radius': '10px',         # Bordes redondeados
+            'box-shadow': '0px 0px 5px rgba(0,0,0,0.3)', # Sombra suave
+            'z-index': '9999'                # Asegura que quede encima de todo
+                          }
+        
+        
+        mapa_1.add_title (title = 'VISOR GIS <br> BLOQUES BUDARE - ELOTES <br> NIPA - NARDO - NIEBLA <br> VERSIÓN DE PRUEBA',
+                          align ='center',
+                          font_size = '16px',
+                          style = estilo_titulo)
+        
+        
+        
+        
         # 3- GENERACIÓN MINI MAPA
         
         '''
@@ -557,6 +579,7 @@ class VisorGeografico:
             el Objeto mini_mapa_1.
             
             Para vincular este objeto al Mapa, es necesario utilizar el método .add_child () de Folium.
+            Toma este objeto externo (el minimapa configurado a mano) y pégalo dentro de mi lienzo
             
             
         '''
@@ -566,8 +589,8 @@ class VisorGeografico:
                             position = 'bottomleft',
                             width = 200,
                             height = 200,
-                            zoom_level_offset = -5,
-                            toggle_display = True)
+                            zoom_level_offset = -5,                            # La diferencia de zoom entre el mapa principal y el mini mapa.Fórmula: $Zoom_{Mini} = Zoom_{Principal} + Offset$
+                            toggle_display = True)                             # Define si se muestra un pequeño botón (flecha) para minimizar/ocultar el mini mapa.
         
         
         mapa_1.add_child (mini_mapa_1)        
