@@ -1077,7 +1077,7 @@ def inicio_modelo_visor_geografico ():
                                                                         'CumOil_kBls',
                                                                         'CumGas_MMscf',
                                                                         'CumWater_KBls'],
-                                                    boton_nombre = 'Informacion_Reservas')
+                                                    boton_nombre = 'Historia_Produccion')
     
     
     nnn_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
@@ -1095,7 +1095,7 @@ def inicio_modelo_visor_geografico ():
                                                                         'CumOil_kBls',
                                                                         'CumGas_MMscf',
                                                                         'CumWater_KBls'],
-                                                    boton_nombre = 'Historia de Produccion')
+                                                    boton_nombre = 'Historia_Produccion')
     
 
    
@@ -1277,6 +1277,7 @@ def inicio_modelo_visor_geografico ():
                          'URL_EvaluacionFormacion': 'Evaluacion_Formacion',
                          'InicioPerforacion': 'Inicio_Perforacion',
                          'FinPerforacion': 'Fin_Perforacion',
+                         'Historia_Produccion': 'Historia_Produccion',
                          'VisitaCampo': 'Visita_Campo_LNG',
                          'FechaVisita': 'Fecha_Visita_Campo',
                          'URL_DiagnosticoAmbiental2024': 'Diagnostico_Ambiental_2024',
