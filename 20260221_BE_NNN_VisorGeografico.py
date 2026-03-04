@@ -1119,21 +1119,7 @@ def inicio_modelo_visor_geografico ():
     
     
     
-    capas_dicc = {'Bloque Budare-Elotes': be_bloque,                           # Diccionario con el Nombre y Gdf que se adicionarán al Objeto Mapa (LeafMap)
-                  'Bloque Nipa-Nardo-Nieblas': nnn_bloque,
-                  'Campos (Budare-Elotes):':  be_campos,
-                  'Campos (Nipa-Nardo-Nieblas)': nnn_campos,
-                  'Estaciones (Budare-Elotes)':be_estaciones,
-                  'Estaciones (Nipa-Nardo-Nieblas)': nnn_estaciones,
-                  'Estaciones Activas (Budare-Elotes)':be_estaciones_activas,
-                  'Estaciones Activas (Nipa-Nardo-Nieblas)': nnn_estaciones_activas, 
-                  'Pozos (Budare Elotes)': be_pozos,
-                  'Pozos (Nipa-Nardo-Nieblas)': nnn_pozos,
-                  'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)':  be_pozos_Priorizados_v1,
-                  'Pozos (Nipa-Nardo-Nieblas): Priorizados. Versión No. 1 (18/02/2026)': nnn_pozos_Priorizados_v1,
-                  'Pozos (Budare Elotes): Prueba Piloto':  be_pozos_prueba_piloto,
-                  'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': nnn_pozos_prueba_piloto 
-                  }
+    
     
     
     '''
@@ -1144,19 +1130,19 @@ def inicio_modelo_visor_geografico ():
         # 1- HIPERVINCULOS DE POZOS.
     
     campos_be = [
-        'URL_DiagramaPozo', 
-        'URL_FichaCompletacion', 
-        'URL_HistoriaPozo', 
-        'URL_EvaluacionFormacion', 
-        'URL_DiagnosticoAmbiental2024']
+        'Diagrama_Pozo', 
+        'Ficha_Completacion', 
+        'Historia_Pozo', 
+        'Evaluacion_Formacion', 
+        'Diagnostico_Ambiental_2024']
     
     
     campos_nnn = [
-        'URL_DiagramaPozo', 
-        'URL_FichaCompletacion', 
-        'URL_HistoriaPozo', 
-        'URL_EvaluacionFormacion', 
-        'URL_DiagnosticoAmbiental2024']
+        'Diagrama_Pozo', 
+        'Ficha_Completacion', 
+        'Historia_Pozo', 
+        'Evaluacion_Formacion', 
+        'Diagnostico_Ambiental_2024']
     
     
         # 2- HIPERVINCULOS DE ESTACIONES.
@@ -1175,8 +1161,8 @@ def inicio_modelo_visor_geografico ():
                              'Estaciones Activas (Nipa-Nardo-Nieblas)': campos_nnn_estaciones}                                    
     
     
-    columnas_labels = {'Pozos (Budare Elotes): Prueba Piloto': 'UWISuperf',
-                       'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': 'UWISuperf',
+    columnas_labels = {'Pozos (Budare Elotes): Prueba Piloto': 'UWI_Superficie',
+                       'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': 'UWI_Superficie',
                        'Estaciones Activas (Budare-Elotes)': 'ID',
                        'Estaciones Activas (Nipa-Nardo-Nieblas)': 'ID'}
     
@@ -1219,7 +1205,7 @@ def inicio_modelo_visor_geografico ():
     
     capas_iconos_config = {
         'Pozos (Budare Elotes): Prueba Piloto':{
-            'campo': 'CategIni',
+            'campo': 'Categoria_Pozo',
              'mapeo': {
                  1: {'icon': 'play', 'color': 'green', 'prefix': 'fa', 'label': 'Pozo Categoria 1'},
                  2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa', 'label': 'Pozo Categoria 2'},
@@ -1227,7 +1213,7 @@ def inicio_modelo_visor_geografico ():
                       }
                                                },
         'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto':{
-            'campo': 'CategIni',
+            'campo': 'Categoria_Pozo',
              'mapeo': {
                  1: {'icon': 'play', 'color': 'green', 'prefix': 'fa', 'label': 'Pozo Categoria 1'},
                  2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa', 'label': 'Pozo Categoria 2'},
@@ -1235,7 +1221,7 @@ def inicio_modelo_visor_geografico ():
                       }
                                                      },
         'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)':{
-            'campo': 'CategIni',
+            'campo': 'Categoria_Pozo',
              'mapeo': {
                  1: {'icon': 'play', 'color': 'green', 'prefix': 'fa', 'label': 'Pozo Categoria 1'},
                  2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa', 'label': 'Pozo Categoria 2'},
@@ -1243,7 +1229,7 @@ def inicio_modelo_visor_geografico ():
                       }
                                                },
         'Pozos (Nipa-Nardo-Nieblas): Priorizados. Versión No. 1 (18/02/2026)':{
-            'campo': 'CategIni',
+            'campo': 'Categoria_Pozo',
              'mapeo': {
                  1: {'icon': 'play', 'color': 'green', 'prefix': 'fa', 'label': 'Pozo Categoria 1'},
                  2: {'icon': 'clock-o', 'color': 'orange', 'prefix': 'fa', 'label': 'Pozo Categoria 2'},
@@ -1320,11 +1306,27 @@ def inicio_modelo_visor_geografico ():
                                                          dicc_columnas = dicc_campos_pozos)
     
     
-    
+        
     
     '''
     GENERACIÓN DEL MAPA
     '''
+    
+    capas_dicc = {'Bloque Budare-Elotes': be_bloque,                           # Diccionario con el Nombre y Gdf que se adicionarán al Objeto Mapa (LeafMap)
+                  'Bloque Nipa-Nardo-Nieblas': nnn_bloque,
+                  'Campos (Budare-Elotes):':  be_campos,
+                  'Campos (Nipa-Nardo-Nieblas)': nnn_campos,
+                  'Estaciones (Budare-Elotes)':be_estaciones,
+                  'Estaciones (Nipa-Nardo-Nieblas)': nnn_estaciones,
+                  'Estaciones Activas (Budare-Elotes)':be_estaciones_activas,
+                  'Estaciones Activas (Nipa-Nardo-Nieblas)': nnn_estaciones_activas, 
+                  'Pozos (Budare Elotes)': be_pozos,
+                  'Pozos (Nipa-Nardo-Nieblas)': nnn_pozos,
+                  'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)':  be_pozos_Priorizados_v1,
+                  'Pozos (Nipa-Nardo-Nieblas): Priorizados. Versión No. 1 (18/02/2026)': nnn_pozos_Priorizados_v1,
+                  'Pozos (Budare Elotes): Prueba Piloto':  be_pozos_prueba_piloto,
+                  'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': nnn_pozos_prueba_piloto 
+                  }
     
     
     
