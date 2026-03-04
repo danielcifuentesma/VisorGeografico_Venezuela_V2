@@ -156,6 +156,13 @@ class AnalisisGeoespacial ():
 class AnalisisGeoespacial ():
     
     
+    
+            
+
+
+        
+    
+    
     def filtrado_registros (self, gdf, columna, valor):                        # Realiza una Selección Específica sobre un GeodataFrame
     
     
@@ -251,6 +258,131 @@ class AnalisisGeoespacial ():
         print (f' ✅ Relación 1:Muchos en la columna {boton_nombre}')
         
         return gdf_padre
+
+
+
+
+    def estructurar_columnas (self, gdf_df, dicc_columnas):
+        
+        
+        """
+        
+        Objetivo: Filtrar, Renombrar y Ordenar las columnas de un GeodataFrame o un Dataframe.
+        
+        Parámetros: 
+            
+            gdf_df: Geodataframe / Dataframe a modificar
+            dicc_columnas: Diccionario ['Nombre_Original': 'Nombre_Ajustado y Orden']
+        
+                
+        """
+        
+        
+        
+        if gdf_df is None or dicc_columnas is None:                            # Si no Hay datos para Procesar, se devuelve las Capas originales
+            
+            return gdf_df
+        
+        
+        
+         # 1. VALIDACIÓN: Verifica que las columnas del Diccionario, realmente existan.
+        
+        
+        columnas_existentes = {nombre_original: nombre_ajustado for nombre_original, nombre_ajustado in dicc_columnas.items ()
+                                
+                               if nombre_original in gdf_df.columns}
+        
+        
+        columnas_faltantes = set (dicc_columnas.keys ()) - set (columnas_existentes.keys ())                # set convierte a conjuntos matemáticos, de tal forma que se pueda aplicar la teoría de conjuntos
+        
+        if columnas_faltantes:
+            
+            print (f'⚠️ Advertencia: Las siguientes columnas no existen en la capa y se omitirán: {columnas_faltantes}')
+        
+        
+                 
+        """
+        COMPRESIÓN DE DICCIONARIOS para validar que los Nombres originales del Diccionario, realmente estén en las columnas del Gdf / Df.
+        
+         {nombre_original: nombre_ajustado}  Devuelve el Diccionario
+         
+         for nombre_original,nombre_ajustado in dicc_columnas.items (): La Lista nombre_original,nombre_ajustado recorre la Lista creada a partir del Diccionario entregado, según 
+          dicc_columnas.items () [El método .items (), devuelve una lista con la clave: Valor]
+          
+         if nombre_original in gdf_df.columns: Validador. Si el Nombre Original existe en el nombre de las columnas del gdf/df,
+         se incopora en el Diccionario Final
+                                
+        
+        """
+        
+        
+        # 2. VALIDACIÓN COMPONENTE GEOESPACIAL: Asegura que en el caso de Geodataframe, la columna Geometría No se pierda
+        
+        
+        es_geoespacial = isinstance(gdf_df, gpd.GeoDataFrame)                  # Valida si la capa de entrada es una Instancia de la Clase Geodataframe de Geopandas
+        
+        
+        if es_geoespacial:                                                     # Si es un GDF, el Nombre de la Columna Geometría se almacena en col_geometria
+            
+            col_geometria = gdf_df.geometry.name 
+            
+        else:                                                                  # Si es un DataFrame, No tiene Geometría. Por lo tanto la columna col_geometria = None
+            
+            col_geometria = None
+            
+            
+        
+        # 3. FILTRADO: Únicamente se dejan las columnas solicitadas
+        
+        
+        cols_a_mantener = list(columnas_existentes.keys())                     # Del Diccionario, se dejan los Nombres de Columnas Iniciales que se van a Mantener, según el orden Solicitado.
+                                                                               # Se convierte en Lista porque Geopandas/Pandas requieren una Lista para poder filtrar las Columnas y en caso tal,
+                                                                               # adicionar la columna Geometría
+            
+        
+        
+        # 4. ADICIÓN COLUMNA GEOMETRÍA
+        
+        
+        if es_geoespacial and col_geometria not in cols_a_mantener:             # Valida si la Capa es un GDF y a su vez, no está en la Lista cols_a_mantener, se adiciona la Geometría.
+            
+            cols_a_mantener.append(col_geometria)
+            
+        
+        
+        # 5. CREACIÓN DE LA CAPA: Únicamente tendrá las columnas definidas
+        
+        
+        df_estructurado = gdf_df [cols_a_mantener].copy ()                     # Sobre la Capa original con la lista de columnas definidas [cols_a_mantener], se realiza una copia
+                                                                               # y se almacena en df_estructurado
+        
+        
+        
+        
+        # 6. RENOMBRE DE COLUMNAS
+        
+        
+        df_estructurado = df_estructurado.rename (columns = columnas_existentes)   # Las columnas se renombran con base en el Diccionario {columnas_existentes}
+        
+        
+        
+        
+        # 7. ORDENAMIENTO: El Nuevo orden se define por los Valores del Diccionario
+        
+        
+        orden_final = list (columnas_existentes.values ())
+        
+        
+        if es_geoespacial and col_geometria not in orden_final:
+            
+            orden_final.append (col_geometria)
+            
+            
+        df_estructurado = df_estructurado [orden_final]
+        
+        
+        return df_estructurado
+
 
 
 
@@ -876,6 +1008,8 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
+      
+    
     '''
         A. Selección de Estaciones Activas
     
@@ -961,7 +1095,7 @@ def inicio_modelo_visor_geografico ():
                                                                         'CumOil_kBls',
                                                                         'CumGas_MMscf',
                                                                         'CumWater_KBls'],
-                                                    boton_nombre = 'Informacion_Reservas')
+                                                    boton_nombre = 'Historia de Produccion')
     
 
    
@@ -1003,7 +1137,7 @@ def inicio_modelo_visor_geografico ():
     
     
     '''
-    HIPERVÍNCULOS
+        E- HIPERVÍNCULOS
     
     '''
     
@@ -1049,7 +1183,7 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
-    DEFINICIÓN DE ESTILOS
+        F- DEFINICIÓN DE ESTILOS
     
     '''
     
@@ -1117,6 +1251,74 @@ def inicio_modelo_visor_geografico ():
                       }
                                                      }
                            }
+    
+    
+     
+    '''
+        G. FILTRADO, RENOMBRE Y ORDENACIÓN DE COLUMNAS
+    
+    '''
+    
+    # 1. DICCIONARIO PARA POZOS BUDARE - ELOTES
+    
+    dicc_campos_pozos = {'ID_UWI': 'ID_UWI',
+                         'UWISuperf': 'UWI_Superficie',
+                         'ID_GIS': 'ID_GIS',
+                         'ID_WellName': 'ID_Well_Name',
+                         'Bloque': 'Bloque',
+                         'Campo': 'Campo',
+                         'Este_Regven': 'Este_SIRGAS_RegVen',
+                         'Norte_Regven': 'Norte_SIRGAS_RegVen',
+                         'Este_Canoa': 'Este_LaCanoa',
+                         'Norte_Canoa': 'Norte_LaCanoa',
+                         'Longitud': 'Longitud_Geografica',
+                         'Latitud': 'Latitud_Geografica',
+                         'CategIni': 'Categoria_Pozo',
+                         'DescripPozo_PDVSA': 'Descripcion_Pozo_PDVSA',
+                         'CategIniFuente': 'Fuente_Categoria',
+                         'EstadoPozo_PDVSA': 'Estado_Pozo_PDVSA',
+                         'SubEstadoPozo_PDVSA': 'SubEstado_Pozo_PDVSA',
+                         'FluidoSigla_PDVSA': 'Fluido_PDVSA',
+                         'FluidoTipoSigla_PDVSA': 'Tipo_Fluido_PDVSA',
+                         'TipoCrudo_PDVSA': 'Tipo_Crudo_PDVSA',
+                         'EstacFlujo': 'Estacion_Flujo',
+                         'EstacDescarga': 'Estacion_Descarga',
+                         'LevantaPozo_PDVSA': 'levantamiento_Pozo_PDVSA',
+                         'SubLevPozo_PDVSA': 'SubLevabtamiento_Pozo_PDVSA',
+                         'URL_DiagramaPozo': 'Diagrama_Pozo',
+                         'URL_FichaCompletacion': 'Ficha_Completacion',
+                         'URL_HistoriaPozo': 'Historia_Pozo',
+                         'URL_EvaluacionFormacion': 'Evaluacion_Formacion',
+                         'InicioPerforacion': 'Inicio_Perforacion',
+                         'FinPerforacion': 'Fin_Perforacion',
+                         'VisitaCampo': 'Visita_Campo_LNG',
+                         'FechaVisita': 'Fecha_Visita_Campo',
+                         'URL_DiagnosticoAmbiental2024': 'Diagnostico_Ambiental_2024',
+                         'Prioridad': 'Prioridad',
+                         'PrioridadVersion': 'Prioridad_Version',
+                         'PrioridadClase': 'Prioridad_Clase',
+                         'PruebaPiloto': 'Prueba_Piloto'}
+    
+    
+    
+    be_pozos = analisis_geoespacial.estructurar_columnas(gdf_df = be_pozos, 
+                                                         dicc_columnas = dicc_campos_pozos)
+    
+    nnn_pozos = analisis_geoespacial.estructurar_columnas(gdf_df = nnn_pozos, 
+                                                         dicc_columnas = dicc_campos_pozos)
+    
+    be_pozos_Priorizados_v1 = analisis_geoespacial.estructurar_columnas(gdf_df = be_pozos_Priorizados_v1, 
+                                                         dicc_columnas = dicc_campos_pozos)
+    
+    nnn_pozos_Priorizados_v1 = analisis_geoespacial.estructurar_columnas(gdf_df = nnn_pozos_Priorizados_v1, 
+                                                         dicc_columnas = dicc_campos_pozos)
+    
+    be_pozos_prueba_piloto = analisis_geoespacial.estructurar_columnas(gdf_df = be_pozos_prueba_piloto, 
+                                                         dicc_columnas = dicc_campos_pozos)
+    
+    nnn_pozos_prueba_piloto = analisis_geoespacial.estructurar_columnas(gdf_df = nnn_pozos_prueba_piloto, 
+                                                         dicc_columnas = dicc_campos_pozos)
+    
     
     
     
