@@ -242,7 +242,7 @@ class AnalisisGeoespacial ():
 
             return f"""
         <div style="max-height: 250px; max-width: 450px; overflow-y: auto; overflow-x: auto; border: 1px solid #ccc; padding: 5px;">            
-            <p style="font-weight: bold; margin-bottom: 5px; color: #0078D4;">Resumen de Reservas:</p>
+            <p style="font-weight: bold; margin-bottom: 5px; color: #0078D4;">Datos de Produccion:</p>
             {html_tabla}
         </div>
         """       # Se envuelve en un div para controlar el scroll si son muchos registros                                                 
@@ -1127,7 +1127,26 @@ def inicio_modelo_visor_geografico ():
                                                     boton_nombre = 'Historia_Produccion')
     
     
-    
+    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = be_pozos_prueba_piloto,
+                                                    df_hijo = Produccion_Gral_Proyectada_VolTecnicos_TB,
+                                                    gdf_padre_Key = 'UWISuperf',
+                                                    df_hijo_key = 'UWI_Superficie',
+                                                    columnas_interes = ['ID_UWI',
+                                                                        'UWI_Superficie',
+                                                                        'Area_acres_Teorico',
+                                                                        'Espesor_Total_Teorico',
+                                                                        'Espesor_Neto_ft_Teorico',
+                                                                        'POR_frac_Teorico',
+                                                                        'SW_frac_Teorico',
+                                                                        'Presion_Inicial',
+                                                                        'Presion_Actual',
+                                                                        'Boi',
+                                                                        'OOIP_KBls',
+                                                                        'EUR_Actual_Kbls',
+                                                                        'EUR_Oil_Rem_KBls',
+                                                                        'RF_Porc',
+                                                                        'Volumen_Reservas_Tecnicas_KBls'],
+                                                    boton_nombre = 'Estimado_Tecnico_Volumen_Produccion')
     
     
     
@@ -1308,6 +1327,7 @@ def inicio_modelo_visor_geografico ():
                          'InicioPerforacion': 'Inicio_Perforacion',
                          'FinPerforacion': 'Fin_Perforacion',
                          'Historia_Produccion': 'Historia_Produccion',
+                         'Estimado_Tecnico_Volumen_Produccion':'Estimado_Tecnico_Volumen_Produccion',
                          'VisitaCampo': 'Visita_Campo_LNG',
                          'FechaVisita': 'Fecha_Visita_Campo',
                          'URL_DiagnosticoAmbiental2024': 'Diagnostico_Ambiental_2024',
