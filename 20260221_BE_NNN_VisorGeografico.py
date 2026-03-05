@@ -1166,6 +1166,87 @@ def inicio_modelo_visor_geografico ():
     
     
     
+    
+    
+    
+    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
+                                                    df_hijo = Produccion_Gral_Historica_TB,
+                                                    gdf_padre_Key = 'UWISuperf',
+                                                    df_hijo_key = 'UWI_Superficie',
+                                                    columnas_interes = ['ID_UWI',
+                                                                        'UWI_Superficie',
+                                                                        'Completed_Sands',
+                                                                        'Initial_Production_Date',
+                                                                        'Final_Production_Date',
+                                                                        'Cum_Oil_kBls',
+                                                                        'Cum_Gas_MMscf',
+                                                                        'Cum_Water_KBls',
+                                                                        'Cum_Oil_kBls_Before1994',
+                                                                        'Cum_Gas_MMscf_Before1994',
+                                                                        'Cum_Water_KBls_Before1994',
+                                                                        'Source_Volumes_Before1994'],
+                                                    boton_nombre = 'Historia_Produccion_Total')
+    
+    
+    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
+                                                    df_hijo = Produccion_Gral_Proyectada_VolTecnicos_TB,
+                                                    gdf_padre_Key = 'UWISuperf',
+                                                    df_hijo_key = 'UWI_Superficie',
+                                                    columnas_interes = ['ID_UWI',
+                                                                        'UWI_Superficie',
+                                                                        'Completed_Sands',
+                                                                        'Area_acres_Teorico',
+                                                                        'Espesor_Total_Teorico',
+                                                                        'Espesor_Neto_ft_Teorico',
+                                                                        'POR_frac_Teorico',
+                                                                        'SW_frac_Teorico',
+                                                                        'Presion_Inicial',
+                                                                        'Presion_Actual',
+                                                                        'Boi',
+                                                                        'OOIP_KBls',
+                                                                        'EUR_Actual_Kbls',
+                                                                        'EUR_Oil_Rem_KBls',
+                                                                        'RF_Porc',
+                                                                        'Volumen_Reservas_Tecnicas_KBls'],
+                                                    boton_nombre = 'Estimado_Tecnico_Volumen_Produccion')
+    
+    
+    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
+                                                    df_hijo = Produccion_Detallada_Historica_TB,
+                                                    gdf_padre_Key = 'UWISuperf',
+                                                    df_hijo_key = 'UWI_Superficie',
+                                                    columnas_interes = ['ID_UWI',
+                                                                        'UWI_Superficie',
+                                                                        'Completed_Sands',
+                                                                        'Date',
+                                                                        'OilRate_bls',
+                                                                        'GasRate_Mscf',
+                                                                        'WaterRate_Bls'],
+                                                    boton_nombre = 'Historia_Produccion_Detallada')
+    
+    
+    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
+                                                    df_hijo = Produccion_Detallada_Proyectada_VolTecnicos_TB,
+                                                    gdf_padre_Key = 'UWISuperf',
+                                                    df_hijo_key = 'UWI_Superficie',
+                                                    columnas_interes = ['ID_UWI',
+                                                                        'UWI_Superficie',
+                                                                        'Completed_Sands',
+                                                                        'Date',
+                                                                        'Go_stb_d',
+                                                                        'OilVol_stb',
+                                                                        'Np_Mstb',
+                                                                        'GOR_scf_bbl',
+                                                                        'qg_Mscfd',
+                                                                        'Gas_Vol_MMscf',
+                                                                        'Gp_MMscf'],
+                                                    boton_nombre = 'Estimado_Tecnico_Detallado')
+    
+    
+    
+    
+    
+    
     print ('BLOQUE BE: ', be_bloque.columns)
     
     print ('BLOQUE NNN: ',nnn_bloque.columns)
