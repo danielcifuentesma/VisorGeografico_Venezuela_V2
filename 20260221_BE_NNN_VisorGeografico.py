@@ -951,7 +951,7 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
-    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQB09BUzYmdwRItVi2O_JKxdAQtgQQqW1TyiXgOG1_H_0SI?e=OYV6rD'
+    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQAKH_pm-UmwToj-afN5IBLkAavriySAnR6a9foE77wOb_c?e=ZFfrnO'
     ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQD8Q0kbD-IOQLFS1TcLE9SIAaKjjfr53MzJUz0yb_Aq8Kk?e=eTMqnq'
  
     
@@ -997,6 +997,14 @@ def inicio_modelo_visor_geografico ():
     
     be_reservas_TB = datos_be.cargar_capa_zip ('PruebaPiloto_Reservas_TB_20260219')
     
+    
+    #   1. DATAFRAMES DE PRODUCCIÓN
+    
+    Produccion_Gral_Historica_TB = datos_be.cargar_capa_zip ('Produccion_Gral_Historica')
+    Produccion_Gral_Proyectada_VolTecnicos_TB = datos_be.cargar_capa_zip ('Produccion_Gral_Proyectada_VolTecnicos')
+    
+    Produccion_Detallada_Historica_TB = datos_be.cargar_capa_zip ('Produccion_Detallada_Historica')
+    Produccion_Detallada_Proyectada_VolTecnicos_TB = datos_be.cargar_capa_zip ('Produccion_Detallada_Proyectada_VolTecnicos')
     
     
     
@@ -1061,7 +1069,7 @@ def inicio_modelo_visor_geografico ():
     
        D-  PRESENTACIÓN DE RESERVAS (JOIN)
     '''
-    
+    """
     be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = be_pozos_prueba_piloto,
                                                     df_hijo = be_reservas_TB,
                                                     gdf_padre_Key = 'UWISuperf',
@@ -1098,7 +1106,29 @@ def inicio_modelo_visor_geografico ():
                                                     boton_nombre = 'Historia_Produccion')
     
 
+   """
    
+    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = be_pozos_prueba_piloto,
+                                                    df_hijo = Produccion_Gral_Historica_TB,
+                                                    gdf_padre_Key = 'UWISuperf',
+                                                    df_hijo_key = 'UWI_Superficie',
+                                                    columnas_interes = ['ID_UWI',
+                                                                        'UWI_Superficie',
+                                                                        'Completed_Sands',
+                                                                        'Initial_Production_Date',
+                                                                        'Final_Production_Date',
+                                                                        'Cum_Oil_kBls',
+                                                                        'Cum_Gas_MMscf',
+                                                                        'Cum_Water_KBls',
+                                                                        'Cum_Oil_kBls_Before1994',
+                                                                        'Cum_Gas_MMscf_Before1994',
+                                                                        'Cum_Water_KBls_Before1994',
+                                                                        'Source_Volumes_Before1994'],
+                                                    boton_nombre = 'Historia_Produccion')
+    
+    
+    
+    
     
     
     
@@ -1269,7 +1299,7 @@ def inicio_modelo_visor_geografico ():
                          'TipoCrudo_PDVSA': 'Tipo_Crudo_PDVSA',
                          'EstacFlujo': 'Estacion_Flujo',
                          'EstacDescarga': 'Estacion_Descarga',
-                         'LevantaPozo_PDVSA': 'levantamiento_Pozo_PDVSA',
+                         'LevantaPozo_PDVSA': 'Levantamiento_Pozo_PDVSA',
                          'SubLevPozo_PDVSA': 'SubLevabtamiento_Pozo_PDVSA',
                          'URL_DiagramaPozo': 'Diagrama_Pozo',
                          'URL_FichaCompletacion': 'Ficha_Completacion',
