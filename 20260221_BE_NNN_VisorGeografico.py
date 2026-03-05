@@ -980,6 +980,7 @@ def inicio_modelo_visor_geografico ():
     be_campos = datos_be.cargar_capa_zip ('BloqueBE_00_CoordenadasCamposTotalesOficiales_PG_20240911_AjusteLEC')
     be_estaciones = datos_be.cargar_capa_zip ('PlantasEstaciones_BudareElotes_V3_20240724_AjusteLECCampo_PT')
     be_pozos =  datos_be.cargar_capa_zip ('Pozos_BE_PT_Estruct')
+    be_nnn_lineasflujo_ini = datos_be.cargar_capa_zip ('LineasProceso_V0')
     
     
     
@@ -1470,7 +1471,8 @@ def inicio_modelo_visor_geografico ():
                   'Pozos (Budare Elotes): Priorizados. Versión No. 1 (18/02/2026)':  be_pozos_Priorizados_v1,
                   'Pozos (Nipa-Nardo-Nieblas): Priorizados. Versión No. 1 (18/02/2026)': nnn_pozos_Priorizados_v1,
                   'Pozos (Budare Elotes): Prueba Piloto':  be_pozos_prueba_piloto,
-                  'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': nnn_pozos_prueba_piloto 
+                  'Pozos (Nipa-Nardo-Nieblas): Prueba Piloto': nnn_pozos_prueba_piloto,
+                  'Lineas de Flujo Conceptuales':be_nnn_lineasflujo_ini 
                   }
     
     
