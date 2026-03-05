@@ -1169,7 +1169,7 @@ def inicio_modelo_visor_geografico ():
     
     
     
-    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
+    nnn_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
                                                     df_hijo = Produccion_Gral_Historica_TB,
                                                     gdf_padre_Key = 'UWISuperf',
                                                     df_hijo_key = 'UWI_Superficie',
@@ -1188,7 +1188,7 @@ def inicio_modelo_visor_geografico ():
                                                     boton_nombre = 'Historia_Produccion_Total')
     
     
-    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
+    nnn_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
                                                     df_hijo = Produccion_Gral_Proyectada_VolTecnicos_TB,
                                                     gdf_padre_Key = 'UWISuperf',
                                                     df_hijo_key = 'UWI_Superficie',
@@ -1211,7 +1211,7 @@ def inicio_modelo_visor_geografico ():
                                                     boton_nombre = 'Estimado_Tecnico_Volumen_Produccion')
     
     
-    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
+    nnn_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
                                                     df_hijo = Produccion_Detallada_Historica_TB,
                                                     gdf_padre_Key = 'UWISuperf',
                                                     df_hijo_key = 'UWI_Superficie',
@@ -1225,7 +1225,7 @@ def inicio_modelo_visor_geografico ():
                                                     boton_nombre = 'Historia_Produccion_Detallada')
     
     
-    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
+    nnn_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
                                                     df_hijo = Produccion_Detallada_Proyectada_VolTecnicos_TB,
                                                     gdf_padre_Key = 'UWISuperf',
                                                     df_hijo_key = 'UWI_Superficie',
