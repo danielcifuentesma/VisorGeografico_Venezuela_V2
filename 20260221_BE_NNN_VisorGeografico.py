@@ -1127,9 +1127,31 @@ def inicio_modelo_visor_geografico ():
                                              valor = 'SI (19/02/2026)')
     
     
+    
+    
+    '''
+        D. REDONDEO DE DATOS FLOAT
+    
     '''
     
-       D-  PRESENTACIÓN DE RESERVAS (JOIN)
+    be_pozos_prueba_piloto = analisis_geoespacial.ajustar_decimales(gdf_df = be_pozos_prueba_piloto)      
+    
+    nnn_pozos_prueba_piloto = analisis_geoespacial.ajustar_decimales(gdf_df = nnn_pozos_prueba_piloto) 
+    
+    Produccion_Gral_Historica_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Gral_Historica_TB) 
+    
+    Produccion_Gral_Proyectada_VolTecnicos_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Gral_Proyectada_VolTecnicos_TB) 
+    
+    Produccion_Detallada_Historica_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Detallada_Historica_TB)
+    
+    Produccion_Detallada_Proyectada_VolTecnicos_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Detallada_Proyectada_VolTecnicos_TB)
+    
+    
+    
+    
+    '''
+    
+       E-  PRESENTACIÓN DE RESERVAS (JOIN)
     '''
     
    
@@ -1306,7 +1328,7 @@ def inicio_modelo_visor_geografico ():
     
     
     '''
-        E- HIPERVÍNCULOS
+        F- HIPERVÍNCULOS
     
     '''
     
@@ -1352,7 +1374,7 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
-        F- DEFINICIÓN DE ESTILOS
+        G- DEFINICIÓN DE ESTILOS
     
     '''
     
@@ -1421,23 +1443,7 @@ def inicio_modelo_visor_geografico ():
                                                      }
                            }
     
-    '''
-        G. REDONDEO DE DATOS FLOAT
-    
-    '''
-    
-    be_pozos_prueba_piloto = analisis_geoespacial.ajustar_decimales(gdf_df = be_pozos_prueba_piloto)      
-    
-    nnn_pozos_prueba_piloto = analisis_geoespacial.ajustar_decimales(gdf_df = nnn_pozos_prueba_piloto) 
-    
-    Produccion_Gral_Historica_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Gral_Historica_TB) 
-    
-    Produccion_Gral_Proyectada_VolTecnicos_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Gral_Proyectada_VolTecnicos_TB) 
-    
-    Produccion_Detallada_Historica_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Detallada_Historica_TB)
-    
-    Produccion_Detallada_Proyectada_VolTecnicos_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Detallada_Proyectada_VolTecnicos_TB)
-    
+   
     
     
     
