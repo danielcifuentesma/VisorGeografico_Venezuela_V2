@@ -385,6 +385,67 @@ class AnalisisGeoespacial ():
 
 
 
+    def ajustar_decimales (self, gdf_df, decimales = 2, columnas_especificas = None):
+        
+        
+        """
+        
+            Objetivo: Ajusta la cantidad de decimales de las columnas numéricas (float) 
+                  para mejorar la visualización en los popups y tablas.
+                  
+            Parámetros: 
+                    
+                    gdf_df: GeoDataFrame o DataFrame a modificar
+                    decimales: Cantidad de decimales a conservar (Por defecto 2).
+                    columnas_especificas: (Opcional) Lista de nombres de columnas a redondear.
+                                  Si es None, se aplica a todas las columnas tipo float.
+        
+        """
+
+
+        if gdf_df is None:
+            
+            return gdf_df
+        
+        
+        # 1. COPIA DE LA CAPA: Para mantener la integridad de los Datos
+        
+        df_modificado = gdf_df.copy ()
+        
+        
+        
+        # 2. SELECCIÓN DE COLUMNAS: 
+            
+            
+        if columnas_especificas:        # Solo se Redondean las columnas, según columnas_especificas
+        
+            cols_redondear = [col for col in columnas_especificas if col in df_modificado.columns]         # Compresión de Lista
+            
+        
+        else:
+            
+            cols_redondear = df_modificado.select_dtypes (include = ['float64', 'float32']).columns.tolist ()      # Búsqueda automática: Encuentra todas las columnas que sean tipo Float (Decimales)
+            
+            
+            
+        # 3. APLICACIÓN DEL REDONDEO FÍSICO
+        
+        
+        if cols_redondear:
+            
+            
+            df_modificado [cols_redondear] = df_modificado [cols_redondear].round (decimales)
+        
+        
+        
+        return df_modificado
+            
+            
+
+
+
+
+
 
 '''
 Clase Simbología:
@@ -1070,27 +1131,7 @@ def inicio_modelo_visor_geografico ():
     
        D-  PRESENTACIÓN DE RESERVAS (JOIN)
     '''
-    """
-        
-    nnn_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
-                                                    df_hijo = be_reservas_TB,
-                                                    gdf_padre_Key = 'UWISuperf',
-                                                    df_hijo_key = 'ID_UWISuperf',
-                                                    columnas_interes = ['ID_UWISuperf',
-                                                                        'Bloque',
-                                                                        'Campo',
-                                                                        'FechaPerforacion',
-                                                                        'FechaCompletamiento',
-                                                                        'FechaIniProduccion',
-                                                                        'FechaFinProduccion',
-                                                                        'ArenasCompletadas',
-                                                                        'CumOil_kBls',
-                                                                        'CumGas_MMscf',
-                                                                        'CumWater_KBls'],
-                                                    boton_nombre = 'Historia_Produccion')
     
-
-   """
    
     be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = be_pozos_prueba_piloto,
                                                     df_hijo = Produccion_Gral_Historica_TB,
@@ -1380,10 +1421,29 @@ def inicio_modelo_visor_geografico ():
                                                      }
                            }
     
+    '''
+        G. REDONDEO DE DATOS FLOAT
+    
+    '''
+    
+    be_pozos_prueba_piloto = analisis_geoespacial.ajustar_decimales(gdf_df = be_pozos_prueba_piloto)      
+    
+    nnn_pozos_prueba_piloto = analisis_geoespacial.ajustar_decimales(gdf_df = nnn_pozos_prueba_piloto) 
+    
+    Produccion_Gral_Historica_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Gral_Historica_TB) 
+    
+    Produccion_Gral_Proyectada_VolTecnicos_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Gral_Proyectada_VolTecnicos_TB) 
+    
+    Produccion_Detallada_Historica_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Detallada_Historica_TB)
+    
+    Produccion_Detallada_Proyectada_VolTecnicos_TB = analisis_geoespacial.ajustar_decimales(gdf_df = Produccion_Detallada_Proyectada_VolTecnicos_TB)
+    
+    
+    
     
      
     '''
-        G. FILTRADO, RENOMBRE Y ORDENACIÓN DE COLUMNAS
+        H. FILTRADO, RENOMBRE Y ORDENACIÓN DE COLUMNAS
     
     '''
     
