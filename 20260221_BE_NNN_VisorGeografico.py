@@ -951,7 +951,7 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
-    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQAKH_pm-UmwToj-afN5IBLkAavriySAnR6a9foE77wOb_c?e=ZFfrnO'
+    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQDWRFqS2OouToK21S39tfazAYcq65yIjuqr75cOGwf4NtY?e=Cxf8Nx'
     ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQD8Q0kbD-IOQLFS1TcLE9SIAaKjjfr53MzJUz0yb_Aq8Kk?e=eTMqnq'
  
     
@@ -1070,24 +1070,7 @@ def inicio_modelo_visor_geografico ():
        D-  PRESENTACIÓN DE RESERVAS (JOIN)
     '''
     """
-    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = be_pozos_prueba_piloto,
-                                                    df_hijo = be_reservas_TB,
-                                                    gdf_padre_Key = 'UWISuperf',
-                                                    df_hijo_key = 'ID_UWISuperf',
-                                                    columnas_interes = ['ID_UWISuperf',
-                                                                        'Bloque',
-                                                                        'Campo',
-                                                                        'FechaPerforacion',
-                                                                        'FechaCompletamiento',
-                                                                        'FechaIniProduccion',
-                                                                        'FechaFinProduccion',
-                                                                        'ArenasCompletadas',
-                                                                        'CumOil_kBls',
-                                                                        'CumGas_MMscf',
-                                                                        'CumWater_KBls'],
-                                                    boton_nombre = 'Historia_Produccion')
-    
-    
+        
     nnn_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = nnn_pozos_prueba_piloto,
                                                     df_hijo = be_reservas_TB,
                                                     gdf_padre_Key = 'UWISuperf',
@@ -1124,7 +1107,7 @@ def inicio_modelo_visor_geografico ():
                                                                         'Cum_Gas_MMscf_Before1994',
                                                                         'Cum_Water_KBls_Before1994',
                                                                         'Source_Volumes_Before1994'],
-                                                    boton_nombre = 'Historia_Produccion')
+                                                    boton_nombre = 'Historia_Produccion_Total')
     
     
     be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = be_pozos_prueba_piloto,
@@ -1133,6 +1116,7 @@ def inicio_modelo_visor_geografico ():
                                                     df_hijo_key = 'UWI_Superficie',
                                                     columnas_interes = ['ID_UWI',
                                                                         'UWI_Superficie',
+                                                                        'Completed_Sands',
                                                                         'Area_acres_Teorico',
                                                                         'Espesor_Total_Teorico',
                                                                         'Espesor_Neto_ft_Teorico',
@@ -1149,9 +1133,36 @@ def inicio_modelo_visor_geografico ():
                                                     boton_nombre = 'Estimado_Tecnico_Volumen_Produccion')
     
     
+    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = be_pozos_prueba_piloto,
+                                                    df_hijo = Produccion_Detallada_Historica_TB,
+                                                    gdf_padre_Key = 'UWISuperf',
+                                                    df_hijo_key = 'UWI_Superficie',
+                                                    columnas_interes = ['ID_UWI',
+                                                                        'UWI_Superficie',
+                                                                        'Completed_Sands',
+                                                                        'Date',
+                                                                        'OilRate_bls',
+                                                                        'GasRate_Mscf',
+                                                                        'WaterRate_Bls'],
+                                                    boton_nombre = 'Historia_Produccion_Detallada')
     
     
-    
+    be_pozos_prueba_piloto = analisis_geoespacial.vincular_tabla_1_a_muchos (gdf_padre = be_pozos_prueba_piloto,
+                                                    df_hijo = Produccion_Detallada_Proyectada_VolTecnicos_TB,
+                                                    gdf_padre_Key = 'UWISuperf',
+                                                    df_hijo_key = 'UWI_Superficie',
+                                                    columnas_interes = ['ID_UWI',
+                                                                        'UWI_Superficie',
+                                                                        'Completed_Sands',
+                                                                        'Date',
+                                                                        'Go_stb_d',
+                                                                        'OilVol_stb',
+                                                                        'Np_Mstb',
+                                                                        'GOR_scf_bbl',
+                                                                        'qg_Mscfd',
+                                                                        'Gas_Vol_MMscf',
+                                                                        'Gp_MMscf'],
+                                                    boton_nombre = 'Estimado_Tecnico_Detallado')
     
     
     
@@ -1326,8 +1337,10 @@ def inicio_modelo_visor_geografico ():
                          'URL_EvaluacionFormacion': 'Evaluacion_Formacion',
                          'InicioPerforacion': 'Inicio_Perforacion',
                          'FinPerforacion': 'Fin_Perforacion',
-                         'Historia_Produccion': 'Historia_Produccion',
+                         'Historia_Produccion_Total': 'Historia_Produccion_Total',
                          'Estimado_Tecnico_Volumen_Produccion':'Estimado_Tecnico_Volumen_Produccion',
+                         'Historia_Produccion_Detallada': 'Historia_Produccion_Detallada',
+                         'Estimado_Tecnico_Detallado': 'Estimado_Tecnico_Detallado',
                          'VisitaCampo': 'Visita_Campo_LNG',
                          'FechaVisita': 'Fecha_Visita_Campo',
                          'URL_DiagnosticoAmbiental2024': 'Diagnostico_Ambiental_2024',
