@@ -951,8 +951,8 @@ def inicio_modelo_visor_geografico ():
     
     '''
     
-    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQDWRFqS2OouToK21S39tfazAYcq65yIjuqr75cOGwf4NtY?e=Cxf8Nx'
-    ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQD8Q0kbD-IOQLFS1TcLE9SIAaKjjfr53MzJUz0yb_Aq8Kk?e=eTMqnq'
+    url_drive_be = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQCv1n_6fBkkQ4sggi1bxqtJAUdO-7OmzNI3K2pYXN-SDJI?e=J8OvAH'
+    ur_drive_nnn = 'https://grouplngenergy-my.sharepoint.com/:u:/g/personal/dcifuentes_lngenergygroup_com/IQBflwXC98C3QrTHHq25EUdaAS0TWT5xpNZAbbx909HCvGc?e=FFyQvr'
  
     
     
