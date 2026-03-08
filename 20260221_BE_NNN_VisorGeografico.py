@@ -884,18 +884,15 @@ class AnalisisGeoespacial ():
                 href="data:text/html;base64,{html_base64}": El prefijo data:text/html;base64 le dice al navegador:
                 "Lo que sigue no es una ruta de archivo, es el código de una página web entera empaquetado en base64".
                 
-                Al incrustar la gráfica en el botón, el visor no tiene que ir a buscar archivos a un servidor cada vez que alguien hace clic; 
-                la gráfica ya viaja "dentro" del GeoDataFrame.
-                
-                target="_blank": Al usar _blank, la gráfica se abre en una pestaña nueva. Evita que el usuario pierda su posición en el mapa. 
-                Si no lo pusieras, el navegador intentaría cargar la gráfica sobre el mismo mapa, obligando al usuario a darle a "atrás" y
-                esperar a que todas las capas del visor GIS carguen de nuevo.
+                 Al usar la API Blob (fetch) de JavaScript evitamos el bloqueo de seguridad 
+                 de los navegadores modernos que impide abrir URLs 'data:text/html' 
+                 directamente en nuevas pestañas.
 
     
             '''
             
             btn = f"""
-            <a href="data:text/html;base64,{html_base64}" target="_blank" 
+            <a href="javascript:void(0);" onclick="fetch('data:text/html;base64,{html_base64}').then(r=>r.blob()).then(b=>window.open(URL.createObjectURL(b),'_blank'));" 
                style="display:inline-block; padding:8px 15px; background-color:#de610d; 
                       color:white; text-decoration:none; border-radius:5px; 
                       font-family:Arial; font-weight:bold; text-align:center;">
