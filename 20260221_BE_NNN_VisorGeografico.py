@@ -10,6 +10,9 @@ import pandas as pd
 import streamlit as st
 import leafmap.foliumap as leafmap
 import leafmap.common as leafmap_tools
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import base64
 import folium
 import requests
 import tempfile
@@ -46,7 +49,7 @@ class AlistamientoDatos:
             return f"{base_url}?download=1"
         return url
 
-    #@st.cache_data
+    #@st.cache_visi
     
         
     def cargar_capa_zip(_self, nombre_capa):
@@ -441,6 +444,475 @@ class AnalisisGeoespacial ():
         return df_modificado
             
             
+
+
+    def vincular_grafico_plotly_1_a_muchos (self, gdf_1, df_muchos, gdf_1_key, 
+                                            df_muchos_key, col_x, col_agrupacion, 
+                                            config_trazas, eje_x_es_fecha=True, 
+                                            titulo_base = 'Análisis de Pozo', nombre_col_html = 'Grafico_Interactivo',
+                                            titulo_eje_x = None,
+                                            titulo_eje_y_izquierda = 'Tasa de Petróleo (Bls) / Tasa de Agua (Bls)',
+                                            titulo_eje_y_derecha = 'Tasa de Gas (Mscf)'):
+        
+        
+        '''
+            Objetivo: Generar Gráficos Interactivos con Plotly (Incluye Múltiples Ejes, Selectores Temporales y Botones de Agrupación)
+            Los codigica en un Botón HTML dentro del GeodataFrame.
+            
+            Parámetros:
+                    gdf_1: GeodataFrame que contiene los Elementos Geoespaciales
+                    df_muchos: Tabla con la Información a graficar
+                    gdf_1_key: Llave Primaria de gdf_1
+                    df_muchos_key: Llave de df_muchos y Foránea coincidente con gdf_1_key
+                    col_x: Columna con Datos Eje X (En algunos casos, la Fecha)
+                    col_agrupacion: Es la columna que tiene las Categorías para activar el Menú Desplegable (Ej. Producción Histórica: Arenas Completadas)
+                    config_trazas : {} Diccionario que define las Variables a Graficar y los parámetros Personalizados.
+                    Ej: {'Crudo_Bbls': {'nombre': 'Crudo',
+                                        'color': 'green',
+                                        'eje_secundario': False}, ...}
+                    eje_x_es_fecha: Define si el Eje X son Fechas o NO.
+                    titulo_base: Es el título a incluir en el Gráfico. Por defecto se deja 'Análisis de Pozo'
+                    nombre_col_html: Nombre del Boton que se adicionará al Geodataframe. Por defecto se dejó 'Grafico_Interactivo'
+                    titulo_eje_x: Título del Eje X
+
+        '''
+
+
+    # 0. VALIDACIÓN DE LOS DATOS DE ENTRADA:
+
+
+
+        if gdf_1 is None or df_muchos is None:                      # Valida el gdf/df de entrada. Si alguno está vacío, devuelve la misma capa
+            
+            return gdf_1
+        
+        
+        df_modificado = gdf_1.copy ()
+        botones_html = []
+        
+        
+    # 1A. LIMPIEZA DE DATOS (EJE X):
+        
+        
+        if eje_x_es_fecha:                                          # Si la Variable X es tipo Fecha, se asegura que el campo Fecha realmente se comporte como date. 
+                                                                    # errors='coerce', transforma una posible celda de Fecha inválida.
+                                                                    # (Ej: ‘Pendiente’, ‘N/A’, ‘’) en un Valor Nulo de Tiempo (Nat: Not a Time), permitiendo que el Bucle siga adelante)
+            
+            df_muchos [col_x] = pd.to_datetime(df_muchos[col_x],
+                                               errors='coerce')
+            
+        
+        else:                                                       # Si la Variable X no es tipo Fecha (Ej: Profundidad, Distancia, etc), se asegura que todos los Datos sean Numéricos.
+                                                                    # Esto limpia los datos y convierte textos/vacios en valores Nan
+            
+            df_muchos [col_x] = pd.to_numeric(df_muchos[col_x],
+                                               errors='coerce')
+        
+
+
+    # 1B. LIMPIEZA DE DATOS (EJE Y):
+        
+        
+        for col_variable in config_trazas.keys ():                                  # Se extraen las columnas definidas en config_trazas y se obliga su conversión a números. Los textos/vacíos se vuelven NaN
+            
+            if col_variable in df_muchos.columns:
+                
+                df_muchos [col_variable] = pd.to_numeric(df_muchos [col_variable],
+                                                         errors='coerce')
+
+
+    # 1C. DEFINICIÓN DEL TÍTULO DEL EJE X: 
+        
+        if titulo_eje_x:
+            
+            texto_eje_x = titulo_eje_x
+            
+        else:
+            
+            if eje_x_es_fecha:
+                
+                texto_eje_x = 'Fecha'
+            
+            else:
+                
+                texto_eje_x = str (col_x)
+        
+
+
+
+        for index, row in df_modificado.iterrows():                                       # Recorre por cada índice y filas de df_modificado
+
+            id_valor = row [gdf_1_key]                                                    # Iguala id_valor con el valor de gdf_1_key (UWI)
+
+            df_filtrado = df_muchos [df_muchos [df_muchos_key] == id_valor].copy ()       # Selecciona los registros de la Tabla TB (Ej: Histórico de Producción) igualando df_muchos_key con id_valor
+
+
+            if df_filtrado.empty:
+                
+                botones_html.append ('<p style="color:gray;">Sin datos históricos cargados en el Visor GIS</p>')   # Si la tabla_TB No tiene coincidencias, reporta texto ‘Sin datos históricos cargados en el Visor GIS’
+
+                continue
+
+
+            df_filtrado = df_filtrado.sort_values (by = col_x)                 # Organiza los datos en orden ascendente, según la columna col_x
+
+
+
+            # 2. CONSTRUCCIÓN DE LA FIGURA (DOBLE EJE Y)
+            
+            fig = make_subplots (specs = [[{"secondary_y": True}]])            # Crea el Objeto fig (Lienzo de la Gráfica). [[{"secondary_y": True}]], 
+                                                                               # garantiza que más adelante, cada trace (curva) se pueda asociar a un Eje Y específico
+
+
+                # 2.A. Determinar los grupos de col_agrupacion (Ej: Arenas). Si no hay, se crea un Grupo Único
+                
+            
+            if col_agrupacion:
+                
+                grupos = df_filtrado [col_agrupacion].unique ().tolist ()      # Se filtra la columna Específica (Ej: Todas las Arenas del Pozo)
+                                                                               # unique() elimina los duplicados. Indica cuále son las categorías de col_agrupacion
+                                                                               # .tolist() lo convierte en una lista nativa de Python (ej: ['Arena T', 'Arena R2']
+
+                
+            
+            else:                                   
+                
+                grupos = ['General']                                           # Si col_agrupacion es None (Es decir, No se quiere dropdowns)
+                                                                               # Se crea una Lista teórica con un solo elemento para que el código no falle
+
+
+
+            numero_trazas_por_grupo = len (config_trazas)                      # Depende del Diccionario que se pase. En el contexto de la Producción (Oil/Gas/Water) son 3
+            
+            total_trazas = len (grupos) * numero_trazas_por_grupo              # (len (grupos) = Cantidad de Arenas) * (numero_trazas_por_grupo) = Total de Curvas que tendrá la Gráfica
+
+
+
+            # 3. ADICIÓN DINÁMICA DE TRAZAS (fig.add_trace)
+
+
+            for i, grupo in enumerate (grupos):                                # Recorre grupos. Enumerate() devuelve índice y grupo (Valor de grupos)
+
+
+                if col_agrupacion:
+                    
+                    df_grupo = df_filtrado[df_filtrado [col_agrupacion] == grupo]         # Si existe una categoría de Agrupación, crea grupos de datos
+
+                else:
+                    
+                    df_grupo = df_filtrado                                     # Si No existe col_agrupación, simplemente todos los valores de df_filtrado
+
+
+
+                if i == 0:                                                     # Por default, solo el primer grupo (primera arena) será visible al abrir la gráfica
+                                                                               # El parámetro de visibilidad de go.Scatter (), se asocia a la variable es_visible
+                    es_visible = True
+                    
+                else:
+                    
+                    es_visible = False
+
+
+
+                for col_variable, config in config_trazas.items ():            # Desempaqueta el dicc {config_trazas}. col_variable = ‘Key’; config = {}
+                    
+                    
+                    fig.add_trace (go.Scatter (
+                                                x = df_grupo [col_x],                           # Tabla limipiada filtrada por categoría. Muestra los valores de col_x (Ej: Fechas)
+                                                y = df_grupo [col_variable],                    # Tabla limipiada filtrada por categoría. Realiza una Máscara, según col_variable que es traída, del diccionario config_trazas
+                                                name = f"{config['nombre']} ({grupo})",         # El nombre es dinámico
+                                                mode = 'lines+markers',                         # Dibuja una línea continua (lines) y pone un punto visible (markers) en cada valor de col_x (Fecha)
+                                                line = {
+                                                        'color': config['color'],
+                                                        'width': 2
+                                                        },
+                                                marker = {'size': 4},
+                                                visible = es_visible                            # Toma el valor de la variable definida previamente
+                                                ),
+                                    secondary_y = config['eje_secundario']                      # secondary_y=False: Eje Y izquierdo. secondary_y=True: Eje Y Derecho. 
+                                    )
+
+
+
+            # 4. CONSTRUCCIÓN DEL DROPDOWN (updatemenus)
+
+
+            botones_dropdown = []
+            
+            
+            if col_agrupacion and len (grupos) > 1:                            # La creación de   botones_dropdown, solo tiene sentido si fue definida 
+                                                                               # la variable col_agrupacion y su longitud es mayor a 1 
+                
+                for i, grupo in enumerate (grupos):                            # Crea un Botón por cada Iteración: Inicia el recorrido por cada categoría (c/u de las Areas) de Grupos. 
+                                                                               # i = índica; grupo = categoría de la Arena.
+                    
+            
+                # 4.A. MATRIZ DE BOOLEANOS. Enciende solo las trazas que perteneces a este grupo
+                
+                    '''
+                        inicio = i * numero_trazas_por_grupo
+                        fin = inicio + numero_trazas_por_grupo
+                        
+                            En la Vuelta 0 (Arena T): * 
+                                inicio = 0 * 3 = 0
+                                fin = 0 + 3 = 3
+                                Rango a encender: Posiciones 0, 1 y 2.
+                            
+                            En la Vuelta 1 (Arena R2):
+                                inicio = 1 * 3 = 3
+                                fin = 3 + 3 = 6
+                                Rango a encender: Posiciones 3, 4 y 5.
+                                
+                        for j in range(inicio, fin):
+                          visibilidad[j] = True
+                          
+                          Resultado para Arena T: [True, True, True, False, False, False]
+•                         Resultado para Arena R2: [False, False, False, True, True, True]
+
+
+                    '''
+                
+                
+                    visibilidad = [False] * total_trazas
+                    
+                    inicio = i * numero_trazas_por_grupo
+                    
+                    fin = inicio + numero_trazas_por_grupo
+                    
+                    
+                    for j in range (inicio, fin):
+                        
+                        visibilidad [j] = True
+                    
+            
+                
+                # 4.B. CREACIÓN DEL DICCIONARIO PARÁMETRO 'buttons', según lo requerido posteriormente para fig.update_layout()
+            
+            
+                    botones_dropdown.append (
+                                                 {
+                                                   'label': str (grupo),
+                                                   'method': 'update',
+                                                   'args': [
+                                                             {
+                                                              'visible': visibilidad,
+                                                              'title': f'{titulo_base} {id_valor} - {grupo}'
+                                                             }
+                                                            ]
+                                                 }
+                                            )
+            
+
+
+                # 4.C. CREACIÓN DEL DICCIONARIO PARÁMETRO 'updatemenus', según lo requerido posteriormente para fig.update_layout() 
+
+
+            if botones_dropdown:
+                
+                
+                menu_desplegable = [
+                                    {
+                                      'active': 0,
+                                      'buttons': botones_dropdown,
+                                      'type': 'dropdown',
+                                      'x': 0.05,
+                                      'y': 1.15
+                                    }
+                                   ]
+
+            else:
+                
+                menu_desplegable = []
+
+
+
+
+            # 5. ACTUALIZACIÓN DEL LAYOUT (Títulos, Leyendas, Ejes)
+
+
+
+            titulo_inicial = f'{titulo_base} {id_valor} - {grupos [0]}'        # grupos[0] inicia con el texto de la primera categoría (Arena). Se actualiza en botones_dropdown.append()
+
+
+            fig.update_layout( title = {
+                                        'text': titulo_inicial,
+                                        'font': {
+                                                 'family': 'Century Gothic',
+                                                 'size': 20,
+                                                 'color': '#050200'
+                                                 },
+                                        'x': 0.5,                              # Centrado horizontalmente
+                                        'y': 0.98,                             # Ubicado al 98% de la altura del lienzo (casi al tope)
+                                        'xanchor': 'center',                   # El punto de anclaje de la X es el centro del texto
+                                        'yanchor': 'top',                      # El punto de anclaje de la Y es la parte superior del texto
+                                        'pad': {'t': 10}                       # Un pequeño 'colchón' de 10 píxeles hacia arriba
+                                        },
+                                 xaxis_title = texto_eje_x,
+                                 updatemenus = menu_desplegable,
+                                 hovermode ='x unified',
+                                 legend = {
+                                          'orientation': 'h',
+                                          'yanchor': 'bottom',
+                                          'y': 1.02,
+                                          'xanchor': 'right',
+                                          'x': 1
+                                          },
+                                 margin = {
+                                           't': 120,
+                                           'b': 100,
+                                           'l': 80,
+                                           'r': 80,
+                                           'pad': 10
+                                           },
+                                 plot_bgcolor = 'white'
+                                )
+
+
+
+                # 5.A. PERSONALIZACIÓN DE LOS EJES Y (IZQUIERDA Y DERECHA)
+
+                        # Personalización del Eje 'Y' Petróleo / Agua
+
+            fig.update_yaxes(title_text = titulo_eje_y_izquierda,
+                             secondary_y = False,
+                             showgrid = True,
+                             gridcolor = 'lightgray')
+
+
+                        # Personalización del Eje 'Y' Gas
+
+            fig.update_yaxes(title_text =  titulo_eje_y_derecha,
+                             secondary_y = True,
+                             showgrid = False)
+
+
+
+
+            # 6. ACTUALIZACIÓN EJE X (Selectores y Slider)
+            
+            
+            if eje_x_es_fecha:                                                 # Si son fechas, le ponemos todo: Slider + Botones de meses/años
+            
+                fig.update_xaxes(rangeslider = {
+                                                 'visible': True,
+                                                 'thickness' : 0.08,
+                                                 'bgcolor':"#F0F2F5"
+                                                },
+                                 rangeselector = {
+                                                   'buttons' : [
+                                                                    {
+                                                                      'count': 6,                     # Número de pasos necesarios para actualizar el rango
+                                                                      'label': 'últimos 6 meses',     # Etiqueta que aparecerá en el Botón
+                                                                      'step': 'month',                # Unidad de Medida que el valor de 'count' usará para configurar su rango
+                                                                      'stepmode': 'backward'          # Indica que debe contar 1 mes hacia atrás desde la fecha más reciente en tus datos. 🔙}])}
+                                                                    },
+                                                                    {
+                                                                      'count': 1,                     # Número de pasos necesarios para actualizar el rango
+                                                                      'label': 'último Año',          # Etiqueta que aparecerá en el Botón
+                                                                      'step': 'year',                 # Unidad de Medida que el valor de 'count' usará para configurar su rango
+                                                                      'stepmode': 'backward'          # Indica que debe contar 1 mes hacia atrás desde la fecha más reciente en tus datos. 🔙}])}
+                                                                    },
+                                                                    {
+                                                                      'label': 'Todo',               # Etiqueta que aparecerá en el Botón
+                                                                      'step': 'all',                 # Unidad de Medida que el valor de 'count' usará para configurar su rango
+                                                                    }
+                                                                ]
+                                                                    
+                                                  }
+                                 )
+            
+            else:                                                              # Si son números (Ej: Profundidad), solo ponemos el Slider para hacer zoom
+            
+                fig.update_xaxes(rangeslider = {
+                                                 'visible': True,
+                                                 'thickness' : 0.08,
+                                                 'bgcolor':"#F0F2F5"
+                                                }
+                                 )
+            
+            
+            
+            
+                           
+
+            # 7. EXPORTAR A HTML
+            
+            '''
+                  full_html=True. crea un archivo web completo e independiente. Incluye las etiquetas <html>, <head> y <body>. 
+                  Esto garantiza que, si alguien abre ese código por separado en un navegador, la gráfica se verá perfecta y 
+                  ocupará toda la pantalla.   
+                  
+                  include_plotlyjs='cdn'. Al usar 'cdn', el HTML solo lleva una línea de texto que 
+                  le dice al navegador: "Descarga las herramientas de dibujo desde los servidores rápidos de Plotly/Google". 
+                  Esto hace que el tamaño de tu cadena de texto pase de megabytes a solo unos cuantos kilobyte
+            
+            '''
+            
+            
+            html_grafica = fig.to_html(full_html = True,
+                                       include_plotlyjs ='cdn')
+            
+            
+            
+            '''
+                   html_base64: Convierte el código HTML (que tiene caracteres especiales como <, >, /, ") 
+                                en una cadena de texto plana que solo usa letras y números. •  
+                                
+                                html_grafica.encode('utf-8'): Convierte el texto HTML en "bytes" (el lenguaje de la máquina) 
+                                usando el estándar internacional de caracteres.
+•                              
+                               base64.b64encode(...): Es el proceso de cifrado. Transforma esos bytes en una cadena Base64.
+•  .                           
+                               decode('utf-8'): Convierte el resultado final de nuevo a un "string" de Python para que lo podamos manipular.
+
+            
+            '''
+            
+            
+            html_base64 = base64.b64encode(html_grafica.encode('utf-8')).decode('utf-8')
+
+
+
+
+
+
+            # 8. CONSTRUCCIÓN DEL BOTÓN ASOCIADO A LA GRÁFICA
+            
+            
+            '''
+            
+                href="data:text/html;base64,{html_base64}": El prefijo data:text/html;base64 le dice al navegador:
+                "Lo que sigue no es una ruta de archivo, es el código de una página web entera empaquetado en base64".
+                
+                Al incrustar la gráfica en el botón, el visor no tiene que ir a buscar archivos a un servidor cada vez que alguien hace clic; 
+                la gráfica ya viaja "dentro" del GeoDataFrame.
+                
+                target="_blank": Al usar _blank, la gráfica se abre en una pestaña nueva. Evita que el usuario pierda su posición en el mapa. 
+                Si no lo pusieras, el navegador intentaría cargar la gráfica sobre el mismo mapa, obligando al usuario a darle a "atrás" y
+                esperar a que todas las capas del visor GIS carguen de nuevo.
+
+    
+            '''
+            
+            btn = f"""
+            <a href="data:text/html;base64,{html_base64}" target="_blank" 
+               style="display:inline-block; padding:8px 15px; background-color:#de610d; 
+                      color:white; text-decoration:none; border-radius:5px; 
+                      font-family:Arial; font-weight:bold; text-align:center;">
+               📈 Ver Gráfica de Producción Completa
+            </a>
+            """
+
+
+            botones_html.append (btn)                                          # Incluye el Botón 'btn' a la Lista botones_html
+
+
+
+        df_modificado  [nombre_col_html] =  botones_html                   # Crea una Columna con el nombre 'nombre_col_html' y le incopora el Botón html ' botones_html'
+            
+            
+        return df_modificado
+
 
 
 
@@ -1311,6 +1783,10 @@ def inicio_modelo_visor_geografico ():
     
     
     
+    
+    
+    
+    
     print ('BLOQUE BE: ', be_bloque.columns)
     
     print ('BLOQUE NNN: ',nnn_bloque.columns)
@@ -1444,12 +1920,53 @@ def inicio_modelo_visor_geografico ():
                            }
     
    
+    '''
+        H. GENERACIÓN DE GRÁFICAS (Plotlib)
+    
+    '''
+    
+    config_curvas_produccion = {'OilRate_bls': {'nombre': 'Crudo (Bls)',
+                                                'color': '#15e653',
+                                                'eje_secundario': False},
+                                'GasRate_Mscf': {'nombre': 'Gas (Mscf)',
+                                                 'color': '#ed1111',
+                                                 'eje_secundario': True},
+                                'WaterRate_Bls': {'nombre': 'Agua (Bls)',
+                                                 'color': '#112eed',
+                                                 'eje_secundario': True}
+                                }
+    
+    
+    
+    
+    be_pozos_prueba_piloto = analisis_geoespacial.vincular_grafico_plotly_1_a_muchos(gdf_1 = be_pozos_prueba_piloto, 
+                                                                                     df_muchos = Produccion_Detallada_Historica_TB,
+                                                                                     gdf_1_key = 'ID_UWI',
+                                                                                     df_muchos_key = 'ID_UWI', 
+                                                                                     col_x = 'Date', 
+                                                                                     col_agrupacion = 'Completed_Sands', 
+                                                                                     config_trazas = config_curvas_produccion,
+                                                                                     eje_x_es_fecha = True,
+                                                                                     nombre_col_html = 'Grafico_Interactivo')
+    
+    nnn_pozos_prueba_piloto = analisis_geoespacial.vincular_grafico_plotly_1_a_muchos(gdf_1 = nnn_pozos_prueba_piloto, 
+                                                                                     df_muchos = Produccion_Detallada_Historica_TB,
+                                                                                     gdf_1_key = 'ID_UWI',
+                                                                                     df_muchos_key = 'ID_UWI', 
+                                                                                     col_x = 'Date', 
+                                                                                     col_agrupacion = 'Completed_Sands', 
+                                                                                     config_trazas = config_curvas_produccion,
+                                                                                     eje_x_es_fecha = True,
+                                                                                     nombre_col_html = 'Grafico_Interactivo')
+    
+    
+    
     
     
     
      
     '''
-        H. FILTRADO, RENOMBRE Y ORDENACIÓN DE COLUMNAS
+        I. FILTRADO, RENOMBRE Y ORDENACIÓN DE COLUMNAS
     
     '''
     
@@ -1487,6 +2004,7 @@ def inicio_modelo_visor_geografico ():
                          'FinPerforacion': 'Fin_Perforacion',
                          'Historia_Produccion_Total': 'Historia_Produccion_Total',
                          'Estimado_Tecnico_Volumen_Produccion':'Estimado_Tecnico_Volumen_Produccion',
+                         'Grafico_Interactivo': 'Grafico_Interactivo',
                          'Historia_Produccion_Detallada': 'Historia_Produccion_Detallada',
                          'Estimado_Tecnico_Detallado': 'Estimado_Tecnico_Detallado',
                          'VisitaCampo': 'Visita_Campo_LNG',
@@ -1521,7 +2039,7 @@ def inicio_modelo_visor_geografico ():
         
     
     '''
-    GENERACIÓN DEL MAPA
+        J. GENERACIÓN DEL MAPA
     '''
     
     capas_dicc = {'Bloque Budare-Elotes': be_bloque,                           # Diccionario con el Nombre y Gdf que se adicionarán al Objeto Mapa (LeafMap)
