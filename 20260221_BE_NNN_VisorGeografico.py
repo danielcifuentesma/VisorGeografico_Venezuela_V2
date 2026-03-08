@@ -892,11 +892,11 @@ class AnalisisGeoespacial ():
             '''
             
             btn = f"""
-            <a href="javascript:void(0);" onclick="fetch('data:text/html;base64,{html_base64}').then(r=>r.blob()).then(b=>window.open(URL.createObjectURL(b),'_blank'));" 
+            <a href="#" onclick="var w = window.open('about:blank', '_blank'); w.document.write('<body style=&quot;margin:0;&quot;><iframe src=&quot;data:text/html;base64,{html_base64}&quot; style=&quot;border:none;width:100vw;height:100vh;&quot;></iframe></body>'); w.document.close(); return false;" 
                style="display:inline-block; padding:8px 15px; background-color:#de610d; 
                       color:white; text-decoration:none; border-radius:5px; 
                       font-family:Arial; font-weight:bold; text-align:center;">
-               📈 Ver Gráfica de Producción Completa
+               📈 Abrir Gráfica Interactiva
             </a>
             """
 
