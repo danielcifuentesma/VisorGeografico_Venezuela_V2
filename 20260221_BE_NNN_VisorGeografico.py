@@ -694,10 +694,11 @@ class AnalisisGeoespacial ():
                                                    'label': str (grupo),
                                                    'method': 'update',
                                                    'args': [
-                                                             {
-                                                              'visible': visibilidad,
-                                                              'title': f'{titulo_base} {id_valor} - {grupo}'
-                                                             }
+                                                             # 1er Diccionario: Actualiza las curvas (Trace)
+                                                             {'visible': visibilidad}, 
+                                                             
+                                                             # 2do Diccionario: Actualiza los textos (Layout) conservando el formato
+                                                             {'title.text': f'<b>{titulo_base} {id_valor} - {grupo}</b>'}
                                                             ]
                                                  }
                                             )
@@ -731,7 +732,7 @@ class AnalisisGeoespacial ():
 
 
 
-            titulo_inicial = f'{titulo_base} {id_valor} - {grupos [0]}'        # grupos[0] inicia con el texto de la primera categoría (Arena). Se actualiza en botones_dropdown.append()
+            titulo_inicial = f'<b>{titulo_base} {id_valor} - {grupos [0]}</b>'        # grupos[0] inicia con el texto de la primera categoría (Arena). Se actualiza en botones_dropdown.append()
 
 
             fig.update_layout( title = {
@@ -755,7 +756,14 @@ class AnalisisGeoespacial ():
                                           'yanchor': 'bottom',
                                           'y': 1.02,
                                           'xanchor': 'right',
-                                          'x': 1
+                                          'x': 1,
+                                          'font': {'family': 'Century Gothic',
+                                                   'size': 12,
+                                                   'color': 'black'
+                                                   },
+                                          'bgcolor': 'White',
+                                          'bordercolor': 'Gray',
+                                          'borderwidth': 1
                                           },
                                  margin = {
                                            't': 120,
@@ -1930,7 +1938,7 @@ def inicio_modelo_visor_geografico ():
                                                  'eje_secundario': True},
                                 'WaterRate_Bls': {'nombre': 'Agua (Bls)',
                                                  'color': '#112eed',
-                                                 'eje_secundario': True}
+                                                 'eje_secundario': False}
                                 }
     
     
