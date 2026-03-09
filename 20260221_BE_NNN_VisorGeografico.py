@@ -903,7 +903,7 @@ class AnalisisGeoespacial ():
             
             btn = f"""
             <a href="#" onclick="var w = window.open('about:blank', '_blank'); w.document.write('<body style=&quot;margin:0;&quot;><iframe src=&quot;data:text/html;base64,{html_base64}&quot; style=&quot;border:none;width:100vw;height:100vh;&quot;></iframe></body>'); w.document.close(); return false;" 
-               style="display:inline-block; padding:8px 15px; background-color:#de610d; 
+               style="display:inline-block; padding:8px 15px; background-color:#4CAF50; 
                       color:white; text-decoration:none; border-radius:5px; 
                       font-family:Arial; font-weight:bold; text-align:center;">
                📈 Abrir Gráfica Interactiva
