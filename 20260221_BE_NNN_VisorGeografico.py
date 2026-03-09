@@ -784,14 +784,16 @@ class AnalisisGeoespacial ():
             fig.update_yaxes(title_text = titulo_eje_y_izquierda,
                              secondary_y = False,
                              showgrid = True,
-                             gridcolor = 'lightgray')
+                             gridcolor = 'lightgray',
+                             type = 'log')
 
 
                         # Personalización del Eje 'Y' Gas
 
             fig.update_yaxes(title_text =  titulo_eje_y_derecha,
                              secondary_y = True,
-                             showgrid = False)
+                             showgrid = False,
+                             type = 'log')
 
 
 
