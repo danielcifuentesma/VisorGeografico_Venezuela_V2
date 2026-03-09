@@ -698,7 +698,7 @@ class AnalisisGeoespacial ():
                                                              {'visible': visibilidad}, 
                                                              
                                                              # 2do Diccionario: Actualiza los textos (Layout) conservando el formato
-                                                             {'title.text': f'<b>{titulo_base} {id_valor}<br><span style="font-size:16px;">Arena: {grupo}</span></b>'}
+                                                             {'title.text': f'<b>{titulo_base} {id_valor}<br><span style="font-size:20px;">Arena: {grupo}</span></b>'}
                                                             ]
                                                  }
                                             )
@@ -732,7 +732,7 @@ class AnalisisGeoespacial ():
 
 
 
-            titulo_inicial = f'<b>{titulo_base} {id_valor}<br><span style="font-size:16px;">Arena: {grupos[0]}</span></b>'        # grupos[0] inicia con el texto de la primera categoría (Arena). Se actualiza en botones_dropdown.append()
+            titulo_inicial = f'<b>{titulo_base} {id_valor}<br><span style="font-size:20px;">Arena: {grupos[0]}</span></b>'        # grupos[0] inicia con el texto de la primera categoría (Arena). Se actualiza en botones_dropdown.append()
 
 
             fig.update_layout( title = {
