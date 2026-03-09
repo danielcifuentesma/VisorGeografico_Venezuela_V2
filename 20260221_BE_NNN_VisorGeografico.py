@@ -449,7 +449,7 @@ class AnalisisGeoespacial ():
     def vincular_grafico_plotly_1_a_muchos (self, gdf_1, df_muchos, gdf_1_key, 
                                             df_muchos_key, col_x, col_agrupacion, 
                                             config_trazas, eje_x_es_fecha=True, 
-                                            titulo_base = 'Análisis de Pozo', nombre_col_html = 'Grafico_Interactivo',
+                                            titulo_base = 'Producción Histórica del Pozo', nombre_col_html = 'Grafico_Interactivo',
                                             titulo_eje_x = None,
                                             titulo_eje_y_izquierda = 'Tasa de Petróleo (Bls) / Tasa de Agua (Bls)',
                                             titulo_eje_y_derecha = 'Tasa de Gas (Mscf)'):
@@ -698,7 +698,7 @@ class AnalisisGeoespacial ():
                                                              {'visible': visibilidad}, 
                                                              
                                                              # 2do Diccionario: Actualiza los textos (Layout) conservando el formato
-                                                             {'title.text': f'<b>{titulo_base} {id_valor} - {grupo}</b>'}
+                                                             {'title.text': f'<b>{titulo_base} {id_valor}</b><br><span style="font-size:16px;">Arena: {grupo}</span>'}
                                                             ]
                                                  }
                                             )
@@ -732,7 +732,7 @@ class AnalisisGeoespacial ():
 
 
 
-            titulo_inicial = f'<b>{titulo_base} {id_valor} - {grupos [0]}</b>'        # grupos[0] inicia con el texto de la primera categoría (Arena). Se actualiza en botones_dropdown.append()
+            titulo_inicial = f'<b>{titulo_base} {id_valor}</b><br><span style="font-size:16px;">Arena: {grupos[0]}</span>'        # grupos[0] inicia con el texto de la primera categoría (Arena). Se actualiza en botones_dropdown.append()
 
 
             fig.update_layout( title = {
